@@ -1,0 +1,22 @@
+{
+  "name": "rollup-starter-lib",
+  "version": "1.0.0",
+  "main": "dist/how-long-till-lunch.cjs.js",
+  "module": "dist/how-long-till-lunch.esm.js",
+  "browser": "dist/how-long-till-lunch.umd.js",
+  "dependencies": {},
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^19.0.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "rollup": "^2.48.0"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "node test/test.js",
+    "pretest": "npm run build"
+  },
+  "files": [
+    "dist"
+  ]
+}
