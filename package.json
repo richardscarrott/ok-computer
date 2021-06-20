@@ -8,23 +8,24 @@
   },
   "main": "dist/ok-computer.cjs.js",
   "module": "dist/ok-computer.esm.js",
-  "browser": "dist/ok-computer.umd.js",
+  "types": "dist/ok-computer.d.ts",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
-    "@rollup/plugin-typescript": "^8.2.1",
     "@types/jest": "^26.0.23",
     "jest": "^26.6.3",
     "prettier": "^2.3.0",
     "rollup": "^2.48.0",
+    "rollup-plugin-typescript2": "^0.30.0",
     "ts-jest": "^26.5.6",
     "tslib": "^2.2.0",
     "typescript": "^4.2.4"
   },
   "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
-    "test": "jest"
+    "build": "rm -rf dist & rollup -c",
+    "dev": "rm -rf dist & rollup -c -w",
+    "test": "jest",
+    "prepublish": "yarn run test & yarn run build"
   },
   "files": [
     "dist"
