@@ -7,6 +7,8 @@
 - Zero dependencies (it's <500 lines of code including types).
 - [5+ years in the making](https://gist.github.com/richardscarrott/7b4abfda67b54d70514e) 😂.
 
+![Alt Text](ok-computer-demo.gif)
+
 ## Example
 
 ```js
