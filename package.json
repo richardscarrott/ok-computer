@@ -11,6 +11,17 @@
   "types": "dist/ok-computer.d.ts",
   "homepage": "https://github.com/richardscarrott/ok-computer#readme",
   "repository": "https://github.com/richardscarrott/ok-computer",
+  "keywords": [
+    "validation",
+    "validator",
+    "valid",
+    "invalid",
+    "data",
+    "functional",
+    "fp",
+    "okay",
+    "joi"
+  ],
   "devDependencies": {
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
