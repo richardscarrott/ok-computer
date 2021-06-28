@@ -28,7 +28,8 @@ import {
   each,
   all,
   $not,
-  not
+  not,
+  when
 } from './ok-computer';
 
 describe('listErrors', () => {
@@ -1102,5 +1103,17 @@ describe("$match('password')", () => {
     expect(validator('password123', { password: 'password123' })).toBe(
       undefined
     );
+  });
+});
+
+describe('when', () => {
+  it('executes the validator only when the predicate is passes', () => {
+    const string = $string('Invalid');
+    const validator1 = when(() => true)(string);
+    const validator2 = when(() => false)(string);
+    expect(validator1('123')).toBe(undefined);
+    expect(validator2('123')).toBe(undefined);
+    expect(validator1(123)).toBe('Invalid');
+    expect(validator2(123)).toBe(undefined);
   });
 });

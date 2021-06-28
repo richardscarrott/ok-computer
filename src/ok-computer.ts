@@ -426,12 +426,10 @@ export function merge(...validators: any[]): any {
 }
 
 export const when =
-  (predicateValidator: Validator) =>
+  (predicate: (value: unknown, ...parents: any[]) => boolean) =>
   <Err>(validator: Validator<Err>): Validator<Err> =>
   (value, ...parents) =>
-    !isError(predicateValidator(value, ...parents))
-      ? validator(value, ...parents)
-      : undefined;
+    predicate(value, ...parents) ? validator(value, ...parents) : undefined;
 
 export const $match = (key: string) =>
   create((value, parent) => parent != null && parent[key] === value);
