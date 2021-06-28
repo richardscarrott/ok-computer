@@ -1,4 +1,7 @@
-## Ok Computer
+# Ok Computer
+
+![GitHub package.json version](https://img.shields.io/github/package-json/v/richardscarrott/ok-computer.svg)
+[![GitHub license](https://img.shields.io/github/license/richardscarrott/ok-computer.svg)](https://github.com/richardscarrott/ok-computer/blob/master/LICENSE)
 
 λ "Functions all the way down" **data validation for JavaScript and TypeScript**.
 
@@ -14,68 +17,46 @@
 
 ![Alt Text](ok-computer-demo.gif)
 
+[Install](#install)
+
+[Example](#example)
+
+[Concepts](#✨-concepts)
+
+[API Docs](#api)
+
 ## Install
 
 ```
-npm i ok-computer
+npm install ok-computer
 ```
 
-## TLDR;
+## Example
+
+[Try in CodeSandbox](https://codesandbox.io/s/ok-computer-7h38q?file=/src/index.ts)
 
 ```js
-import { object, and, length, or, nullish, pattern, match, string, number, integer, min, max, array, is, email, assert } from 'ok-computer';
+import { object, string, or, nullish, and, length, integer, hasError, assert } from 'ok-computer';
 
 const validator = object({
-  username: and(string, length(3, 30)),
-  password: or(nullish, pattern(/^[a-zA-Z0-9]{3,30}$/)),
-  repeat_password: match('password'),
-  access_token: or(string, number),
-  birth_year: and(integer, min(1900), max(2021)),
-  email,
-  addresses: array(
-    object({
-      line1: and(string, length(1, 255)),
-      line2: or(is(undefined), and(string, length(1, 255)))
-    })
-  )
+  firstName: string,
+  lastName: or(nullish, string),
+  picture: object({
+    url: and(string, length(1, 255)),
+    width: integer
+  })
 });
 
-const errors = validator({});
-// {
-//   username: '(Expected string and expected length between 3 and 30)',
-//   password: undefined,
-//   repeat_password: undefined,
-//   access_token: '(Expected string or expected number)',
-//   birth_year: '(Expected integer and expected min 1900 and expected max 2021)',
-//   email: 'Expected email',
-//   addresses: ['Expected array'],
-// }
+const errors = validator({ lastName: 44, picture: {} });
 
-hasError(errors); // or isError(errors)
+hasError(errors);
 // true
 
-const errorList = listErrors(errors);
-// [
-//   {
-//     path: 'username',
-//     err: '(Expected string and expected length between 3 and 30)'
-//   },
-//   { path: 'access_token', err: '(Expected string or expected number)' },
-//   {
-//     path: 'birth_year',
-//     err: '(Expected integer and expected min 1900 and expected max 2021)'
-//   },
-//   { path: 'email', err: 'Expected email' },
-//   { path: 'addresses.0', err: 'Expected array' }
-// ]
-
 assert(errors);
-// throw new ValidationError(`Invalid: first of 5 errors: username: (Expected string and expected length between 3 and 30)`)
+// throw new ValidationError('Invalid: first of 3 errors: firstName: Expected string')
 ```
 
-<!-- ### Custom Validation -->
-
-## ✨Concepts
+## ✨ Concepts
 
 Good news! There's no special API to write your validation logic, you just write a function which accepts a `value` and returns an error if invalid:
 
@@ -412,4 +393,4 @@ string(44);
 
 </details>
 
-### TODO: Document remaining API
+TODO: Document full API
