@@ -1,6 +1,7 @@
 # Ok Computer
 
-![GitHub package.json version](https://img.shields.io/github/package-json/v/richardscarrott/ok-computer.svg)
+[![GitHub package.json version](https://img.shields.io/github/package-json/v/richardscarrott/ok-computer.svg)](https://www.npmjs.com/package/ok-computer)
+[![GitHub license](https://github.com/richardscarrott/ok-computer/actions/workflows/node.js.yml/badge.svg)](https://github.com/richardscarrott/ok-computer/actions/workflows/node.js.yml)
 [![GitHub license](https://img.shields.io/github/license/richardscarrott/ok-computer.svg)](https://github.com/richardscarrott/ok-computer/blob/master/LICENSE)
 
 λ "Functions all the way down" **data validation for JavaScript and TypeScript**.
