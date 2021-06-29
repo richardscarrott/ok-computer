@@ -130,7 +130,7 @@ string(44);
 // new Error('Expected string')
 ```
 
-Therefore, most of the built-in validation functions expose two versions, one which accepts a custom error and another which is already pre-loaded with an error string:
+Therefore, most of the built-in validation functions expose two versions, one accepting a custom error and another which is pre-loaded with an error string:
 
 ```js
 import { string, $string, number, $number } from 'ok-computer';
@@ -151,7 +151,7 @@ num('cat');
 // { id: 'num.invalid' }
 ```
 
-Additionally, many of the built-in functions accept arguments to offer even greater utility:
+Additionally, many of the built-in functions accept arguments to offer greater utility:
 
 ```js
 import { length, $length } from 'ok-conputer';
@@ -259,18 +259,18 @@ isError(error);
 Sometimes validation depends on other values. By convention all validation functions receive their parent values as subsequent arguments:
 
 ```js
-import { object, create } from 'ok-computer';
+import { object, string, create } from 'ok-computer';
 
 const user = object({
   password: string,
   repeatPassword: create((value, parent) => value === parent.password)(
     'Expected to match password'
   ),
-  nested: {
+  nested: object({
     repeatPassword: create(
       (value, parent, grandParent) => value === grandParent.password
     )('Expected to match password')
-  }
+  })
 });
 ```
 
