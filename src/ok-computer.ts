@@ -249,7 +249,7 @@ export const pattern = (value: any) =>
 export const $oneOf = (...allowed: any[]) =>
   $or(...allowed.map((val) => $is(val)));
 export const oneOf = (...allowed: any[]) =>
-  $oneOf(allowed)(`Expected one of ${allowed}`);
+  $oneOf(...allowed)(`Expected one of ${allowed}`);
 
 export const $tuple =
   <Err>(...validators: Validator<Err>[]) =>
