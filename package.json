@@ -32,12 +32,14 @@
     "rollup-plugin-typescript2": "^0.30.0",
     "ts-jest": "^26.5.6",
     "tslib": "^2.2.0",
+    "typedoc": "^0.21.4",
     "typescript": "^4.2.4"
   },
   "scripts": {
     "build": "rm -rf dist & rollup -c",
     "dev": "rm -rf dist & rollup -c -w",
     "test": "jest",
+    "typedoc": "typedoc src/ok-computer.ts",
     "prepublish": "yarn run test & yarn run build"
   },
   "files": [

@@ -1,4 +1,5 @@
 import {
+  create,
   object,
   string,
   number,
@@ -34,6 +35,7 @@ import {
   $array,
   $is,
   $email
+  $anyArray
 } from './ok-computer';
 
 describe('Built-in errors', () => {

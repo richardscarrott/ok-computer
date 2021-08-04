@@ -26,10 +26,12 @@
 
 [API Docs](#api)
 
+[Licence](#licence)
+
 ## Install
 
 ```
-npm install ok-computer
+npm i ok-computer
 ```
 
 ## Example
@@ -37,6 +39,7 @@ npm install ok-computer
 [Try in CodeSandbox](https://codesandbox.io/s/ok-computer-7h38q?file=/src/index.ts)
 
 ```js
+// prettier-ignore
 import { object, string, or, nullish, and, length, integer, hasError, assert } from 'ok-computer';
 
 const validator = object({
@@ -300,11 +303,126 @@ assert(error);
 
 ## API
 
-### `is`
+### Types
+
+#### `Validator<Err>`
+
+<details>
+<summary>(value: unknown, ...parents: any[]) => Err | undefined</summary>
+  
+```ts
+type Validator<Err> = (value: unknown, ...parents: any[]) => Err | undefined;
+
+const fortyFour: Validator<string> = (value) =>
+value !== 44 ? 'Expected 44' : undefined;
+
+````
+</details>
+
+#### `ValidatorFactory`
+
+<details>
+<summary>&lt;Err&gt(err: Err) => Validator&ltErr&gt</summary>
+
+```ts
+type ValidatorFactory = <Err>(err: Err) => Validator<Err>;
+
+const $fortyFour: ValidatorFactory = (err) => (value) =>
+  value !== 44 ? err : undefined;
+````
+
+</details>
+
+### Functions
+
+#### `listErrors`
+
+<details>
+<summary>Lists all errors as an array</summary>
+
+```js
+import { listErrors, object, string } from 'ok-computer';
+
+const user = object({
+  name: string,
+  picture: object({
+    url: string,
+    width: string
+  })
+});
+
+const errors = user({});
+
+listErrors(errors);
+// [
+//   { path: 'name', err: 'Expected string' },
+//   { path: 'picture.__root', err: 'Expected object' },
+//   { path: 'picture.url', err: 'Expected string' },
+//   { path: 'picture.width', err: 'Expected string' }
+// ]
+```
+
+</details>
+
+#### `isError` / `hasError`
+
+<details>
+<summary>Returns true if value is an error, false otherwise</summary>
+
+```js
+import { isError, hasError, string } from 'ok-computer';
+
+const error = string(44);
+
+isError(error);
+// true
+
+hasError(error);
+// true
+```
+
+</details>
+
+#### `assert`
+
+<details>
+<summary>Throws if value is an error</summary>
+
+```js
+import { assert, string } from 'ok-computer';
+
+const error = string(44);
+
+assert(error);
+// throw new ValidationError('Invalid: first of 1 errors: Expected string');
+```
+
+</details>
+
+#### `create`
+
+<details>
+<summary>Accepts a predicate function and returns a ValidatorFactory</summary>
+
+```js
+import { create } from 'ok-computer';
+
+const is44 = create((value) => value === 44)('Expected 44');
+
+is44(44);
+// undefined
+
+is44(33);
+// 'Expected 44'
+```
+
+</details>
+
+#### `is`
 
 <details>
 <summary>Performs a strict equality check with `===`</summary>
-  
+
 ```js
 import { is } from 'ok-computer';
 
@@ -315,8 +433,7 @@ is44(44);
 
 is44(33);
 // 'Expected 44'
-
-````
+```
 
 ```js
 import { $is } from 'ok-computer';
@@ -328,11 +445,11 @@ is44(44);
 
 is44(33);
 // new Error('Expected 44')
-````
+```
 
 </details>
 
-### `typeOf`
+#### `typeOf`
 
 <details>
 <summary>Performs a `typeof` check</summary>
@@ -364,7 +481,7 @@ string(44);
 
 </details>
 
-### `string`
+#### `string`
 
 <details>
 <summary>Performs a `typeof 'string'` check</summary>
@@ -394,4 +511,434 @@ string(44);
 
 </details>
 
-TODO: Document full API
+#### `number`
+
+<details>
+<summary>Performs a `typeof 'number'` check</summary>
+  
+```js
+import { number } from 'ok-computer';
+
+number(44);
+// undefined
+
+string('cat');
+// 'Expected number'
+
+````
+
+```js
+import { $number } from 'ok-computer';
+
+const number = $number(new Error('Expected number'));
+
+number(44);
+// undefined
+
+number('cat');
+// new Error('Expected number')
+````
+
+</details>
+
+#### `boolean`
+
+<details>
+<summary>Performs a `typeof 'boolean'` check</summary>
+  
+```js
+import { boolean } from 'ok-computer';
+
+boolean(false);
+// undefined
+
+boolean('cat');
+// 'Expected boolean'
+
+````
+
+```js
+import { $boolean } from 'ok-computer';
+
+const boolean = $boolean(new Error('Expected boolean'));
+
+boolean(false);
+// undefined
+
+boolean('cat');
+// new Error('Expected boolean')
+````
+
+</details>
+
+#### `integer`
+
+<details>
+<summary>Performs a `Number.isInteger` check</summary>
+  
+```js
+import { integer } from 'ok-computer';
+
+integer(44);
+// undefined
+
+integer(44.44);
+// 'Expected integer'
+
+````
+
+```js
+import { $integer } from 'ok-computer';
+
+const integer = $integer(new Error('Expected integer'));
+
+integer(44);
+// undefined
+
+integer(44.44);
+// new Error('Expected integer')
+````
+
+</details>
+
+#### `instanceOf`
+
+<details>
+<summary>Accepts a constructor and checks if `instanceof`</summary>
+  
+```js
+import { instanceOf } from 'ok-computer';
+
+function Foo() {}
+
+const foo = instanceOf(Foo);
+
+foo(new Foo());
+// undefined
+
+foo({});
+// 'Expected instanceof Foo'
+
+````
+
+```js
+import { instanceOf } from 'ok-computer';
+
+function Foo() {}
+
+const foo = $instanceOf(Foo)(new Error('Expected instanceof Foo'));
+
+foo(new Foo());
+// undefined
+
+foo({});
+// new Error('Expected instanceof Foo')
+````
+
+</details>
+
+#### `or`
+
+<details>
+<summary>Returns a validator which errors if all validators return an error</summary>
+  
+```js
+import { or, string, number, boolean } from 'ok-computer';
+
+const validator = or(string, number, boolean);
+
+validator('cat');
+// undefined
+
+validator(44);
+// undefined
+
+validator(true);
+// undefined
+
+validator(null);
+// '(Expected string or expected number or expected boolean)'
+
+````
+
+```js
+import { $or, $string, $number, $boolean } from 'ok-computer';
+
+const validator = $or($string, $number, $boolean)(new Error('Expected string, number or boolean'));
+
+validator('cat');
+// undefined
+
+validator(44);
+// undefined
+
+validator(true);
+// undefined
+
+validator(null);
+// '(Expected string, number or boolean)'
+````
+
+</details>
+
+#### `and`
+
+<details>
+<summary>Returns a validator which errors if one or more validators return an error</summary>
+  
+```js
+import { and, number, min, max } from 'ok-computer';
+
+const validator = and(number, min(1), max(5));
+
+validator(3);
+// undefined
+
+validator(6);
+// '(Expected min 1 and expected max 5)'
+
+validator('cat');
+// '(Expected number and expected min 1 and expected max 5)'
+
+````
+
+```js
+import { $and, $number, $min, $max } from 'ok-computer';
+
+const validator = $and($number, $min(1), $max(5))(new Error('Expected number between 1 and 5 inclusive'));
+
+validator(3);
+// undefined
+
+validator(6);
+// 'Expected number between 1 and 5 inclusive'
+
+validator('cat');
+// 'Expected number between 1 and 5 inclusive'
+````
+
+</details>
+
+#### `array`
+
+<details>
+<summary>Checks the value is an array and each element passes the validator</summary>
+  
+```js
+import { array, string } from 'ok-computer';
+
+const validator = array(string);
+
+validator(['cat', 'catamaran']);
+// []
+
+validator([]);
+// []
+
+validator('cat');
+// ['Expected array']
+
+validator([44]);
+// ['Expected string']
+
+validator([44, 'cat', false]);
+// ['Expected string', undefined, 'Expected string']
+
+````
+
+```js
+import { $array, string } from 'ok-computer';
+
+const validator = $array(string)(new Error('Expected array'));
+
+validator(['cat', 'catamaran']);
+// []
+
+validator([]);
+// []
+
+validator('cat');
+// [new Error('Expected array')]
+
+validator([44]);
+// ['Expected string']
+
+validator([44, 'cat', false]);
+// ['Expected string', undefined, 'Expected string']
+````
+
+</details>
+
+#### `maxLength`
+
+// TODO: Redo this one
+
+<details>
+<summary>Checks the value is a string or an array and has a length no greater than the length specified</summary>
+  
+```js
+import { maxLength } from 'ok-computer';
+
+const validator = maxLength(3);
+
+validator('cat');
+// undefined
+
+validator(['cat', 'dog']);
+// undefined
+
+validator('catamaran');
+// 'Expected max length 3'
+
+validator(['cat, 'dog', 44, false]);
+// 'Expected max length 3'
+
+validator(44);
+// 'Expected max length 3'
+
+````
+
+```js
+import { $maxLength } from 'ok-computer';
+
+const validator = $maxLength(3)(new Error('Expected max length 3'));
+
+validator('cat');
+// undefined
+
+validator(['cat', 'dog']);
+// undefined
+
+validator('catamaran');
+// new Error('Expected max length 3')
+
+validator(['cat, 'dog', 44, false]);
+// new Error('Expected max length 3')
+
+validator(44);
+// new Error('Expected max length 3')
+````
+
+</details>
+
+#### `minLength`
+
+<details>
+<summary>Checks the value is a string or an array and has a length no less than the length specified</summary>
+  
+```js
+import { minLength } from 'ok-computer';
+
+const minLength3 = minLength(3);
+
+minLength3('cat');
+minLength3('catamaran');
+minLength3(['cat, 'catamaran', 44]);
+minLength3(['cat, 'catamaran', 44, false]);
+// undefined
+
+minLength3('ca');
+minLength3(['cat', 'catamaran']);
+minLength3(true);
+// 'Expected min length 3'
+
+````
+
+```js
+import { $minLength } from 'ok-computer';
+
+const minLength3 = minLength(3)(new Error('Expected min length 3'));
+
+const minLength3 = minLength(3);
+
+minLength3('cat');
+minLength3('catamaran');
+minLength3(['cat, 'catamaran', 44]);
+minLength3(['cat, 'catamaran', 44, false]);
+// undefined
+
+minLength3('ca');
+minLength3(['cat', 'catamaran']);
+minLength3(true);
+// new Error('Expected min length 3')
+````
+
+</details>
+
+#### `length`
+
+<details>
+<summary>Checks the value is a string or an array and has a length between the min and max length specified</summary>
+  
+```js
+import { length } from 'ok-computer';
+
+const lengthBetween1And3 = length(1, 3);
+
+lengthBetween1And3('c');
+lengthBetween1And3('ca');
+lengthBetween1And3('cat');
+lengthBetween1And3(['cat']);
+lengthBetween1And3(['cat', 'catamaran']);
+lengthBetween1And3(['cat', 'catamaran', 44]);
+// undefined
+
+lengthBetween1And3('');
+lengthBetween1And3('catamaran');
+lengthBetween1And3([]);
+lengthBetween1And3(['cat', 'catamaran', 44, true]);
+// 'Expected length between 1 and 3'
+
+const length2 = length(2);
+
+length2('ca');
+length2(['cat', 'catamaran']);
+// undefined
+
+length2('');
+length2('cat');
+length2([]);
+length2(['cat', 'catamaran', 44]);
+// 'Expected length 2'
+
+````
+
+```js
+import { $length } from 'ok-computer';
+
+const lengthBetween1And3 = $length(1, 3)(new Error('Expected length between 1 and 3'));
+
+lengthBetween1And3('c');
+lengthBetween1And3('ca');
+lengthBetween1And3('cat');
+lengthBetween1And3(['cat']);
+lengthBetween1And3(['cat', 'catamaran']);
+lengthBetween1And3(['cat', 'catamaran', 44]);
+// undefined
+
+lengthBetween1And3('');
+lengthBetween1And3('catamaran');
+lengthBetween1And3([]);
+lengthBetween1And3(['cat', 'catamaran', 44, true]);
+lengthBetween1And3(44);
+// new Error('Expected length between 1 and 3')
+
+const length2 = $length(2)(new Error('Expected length 2'));
+
+length2('ca');
+length2(['cat', 'catamaran']);
+// undefined
+
+length2('');
+length2('cat');
+length2([]);
+length2(['cat', 'catamaran', 44]);
+length2(44);
+// new Error('Expected length 2')
+````
+
+</details>
+
+## Licence
+
+Ok Computer is released under the under terms of the [MIT License](https://github.com/richardscarrott/ok-computer/blob/master/LICENSE).

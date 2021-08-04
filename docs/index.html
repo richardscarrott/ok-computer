@@ -1,0 +1,1117 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>ok-computer</title>
+	<meta name="description" content="Documentation for ok-computer">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+	<script async src="assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">ok-computer</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<h1>ok-computer</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#ok-computer" id="ok-computer" style="color: inherit; text-decoration: none;">
+					<h1>Ok Computer</h1>
+				</a>
+				<p><a href="https://www.npmjs.com/package/ok-computer"><img src="https://img.shields.io/github/package-json/v/richardscarrott/ok-computer.svg" alt="GitHub package.json version"></a>
+					<a href="https://github.com/richardscarrott/ok-computer/actions/workflows/node.js.yml"><img src="https://github.com/richardscarrott/ok-computer/actions/workflows/node.js.yml/badge.svg" alt="GitHub license"></a>
+				<a href="https://github.com/richardscarrott/ok-computer/blob/master/LICENSE"><img src="https://img.shields.io/github/license/richardscarrott/ok-computer.svg" alt="GitHub license"></a></p>
+				<p>λ &quot;Functions all the way down&quot; <strong>data validation for JavaScript and TypeScript</strong>.</p>
+				<p>🥞 Designed for frontend and backend.</p>
+				<p>🗣 First class support for custom error messages / bring your own i18n.</p>
+				<p>🔌 Don&#39;t like something? Need extra functionality? Write a function.</p>
+				<p>☕ Zero dependencies (it&#39;s &lt; 500 lines of code including types).</p>
+				<p>😂 <a href="https://gist.github.com/richardscarrott/7b4abfda67b54d70514e">5+ years in the making</a>.</p>
+				<p><img src="ok-computer-demo.gif" alt="Alt Text"></p>
+				<p><a href="#install">Install</a></p>
+				<p><a href="#example">Example</a></p>
+				<p><a href="#%E2%9C%A8-concepts">Concepts</a></p>
+				<p><a href="#api">API Docs</a></p>
+				<p><a href="#licence">Licence</a></p>
+				<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+					<h2>Install</h2>
+				</a>
+				<pre><code><span style="color: #001080">npm</span><span style="color: #000000"> </span><span style="color: #001080">i</span><span style="color: #000000"> </span><span style="color: #001080">ok</span><span style="color: #000000">-</span><span style="color: #001080">computer</span>
+</code></pre>
+				<a href="#example" id="example" style="color: inherit; text-decoration: none;">
+					<h2>Example</h2>
+				</a>
+				<p><a href="https://codesandbox.io/s/ok-computer-7h38q?file=/src/index.ts">Try in CodeSandbox</a></p>
+				<pre><code class="language-js"><span style="color: #008000">// prettier-ignore</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">object</span><span style="color: #000000">, </span><span style="color: #001080">string</span><span style="color: #000000">, </span><span style="color: #001080">or</span><span style="color: #000000">, </span><span style="color: #001080">nullish</span><span style="color: #000000">, </span><span style="color: #001080">and</span><span style="color: #000000">, </span><span style="color: #001080">length</span><span style="color: #000000">, </span><span style="color: #001080">integer</span><span style="color: #000000">, </span><span style="color: #001080">hasError</span><span style="color: #000000">, </span><span style="color: #001080">assert</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">validator</span><span style="color: #000000"> = </span><span style="color: #795E26">object</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">firstName:</span><span style="color: #000000"> </span><span style="color: #001080">string</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">lastName:</span><span style="color: #000000"> </span><span style="color: #795E26">or</span><span style="color: #000000">(</span><span style="color: #001080">nullish</span><span style="color: #000000">, </span><span style="color: #001080">string</span><span style="color: #000000">),</span>
+<span style="color: #000000">  </span><span style="color: #001080">picture:</span><span style="color: #000000"> </span><span style="color: #795E26">object</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #001080">url:</span><span style="color: #000000"> </span><span style="color: #795E26">and</span><span style="color: #000000">(</span><span style="color: #001080">string</span><span style="color: #000000">, </span><span style="color: #795E26">length</span><span style="color: #000000">(</span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #098658">255</span><span style="color: #000000">)),</span>
+<span style="color: #000000">    </span><span style="color: #001080">width:</span><span style="color: #000000"> </span><span style="color: #001080">integer</span>
+<span style="color: #000000">  })</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">errors</span><span style="color: #000000"> = </span><span style="color: #795E26">validator</span><span style="color: #000000">({ </span><span style="color: #001080">lastName:</span><span style="color: #000000"> </span><span style="color: #098658">44</span><span style="color: #000000">, </span><span style="color: #001080">picture:</span><span style="color: #000000"> {} });</span>
+
+<span style="color: #795E26">hasError</span><span style="color: #000000">(</span><span style="color: #001080">errors</span><span style="color: #000000">);</span>
+<span style="color: #008000">// true</span>
+
+<span style="color: #795E26">assert</span><span style="color: #000000">(</span><span style="color: #001080">errors</span><span style="color: #000000">);</span>
+<span style="color: #008000">// throw new ValidationError(&#039;Invalid: first of 3 errors: firstName: Expected string&#039;)</span>
+</code></pre>
+				<a href="#✨-concepts" id="✨-concepts" style="color: inherit; text-decoration: none;">
+					<h2>✨ Concepts</h2>
+				</a>
+				<p>Good news! There&#39;s no special API to write your validation logic, you just write a function which accepts a <code>value</code> and returns an error if invalid:</p>
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">fortyFour</span><span style="color: #000000"> = (</span><span style="color: #001080">value</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span>
+<span style="color: #000000">  </span><span style="color: #001080">value</span><span style="color: #000000"> !== </span><span style="color: #098658">44</span><span style="color: #000000"> ? </span><span style="color: #A31515">&#039;Expected the number 44&#039;</span><span style="color: #000000"> : </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
+
+<span style="color: #795E26">fortyFour</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">fortyFour</span><span style="color: #000000">(</span><span style="color: #098658">43</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected the number 44&#039;</span>
+</code></pre>
+				<p>This is how all built-in validation functions work, for example this is how <code>string</code> is implemented:</p>
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">string</span><span style="color: #000000"> = (</span><span style="color: #001080">value</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">typeof</span><span style="color: #000000"> </span><span style="color: #001080">value</span><span style="color: #000000"> !== </span><span style="color: #A31515">&#039;string&#039;</span><span style="color: #000000"> ? </span><span style="color: #A31515">&#039;Expected string&#039;</span><span style="color: #000000"> : </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected string&#039;</span>
+</code></pre>
+				<p>This signature can be a little distracting however and it can feel more natural to return a <code>boolean</code>. <code>create</code> allows you to do this:</p>
+				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">create</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">string</span><span style="color: #000000"> = </span><span style="color: #795E26">create</span><span style="color: #000000">((</span><span style="color: #001080">value</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #0000FF">typeof</span><span style="color: #000000"> </span><span style="color: #001080">value</span><span style="color: #000000"> === </span><span style="color: #A31515">&#039;string&#039;</span><span style="color: #000000">)(</span><span style="color: #A31515">&#039;Expected string&#039;</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected string&#039;</span>
+</code></pre>
+				<p>You may be thinking <code>create</code> seems like an unnecessary abstraction, however decoupling your validation logic from the error itself turns out to be a good pattern; particularly for i18n:</p>
+				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">create</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">$string</span><span style="color: #000000"> = </span><span style="color: #795E26">create</span><span style="color: #000000">((</span><span style="color: #001080">value</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #0000FF">typeof</span><span style="color: #000000"> </span><span style="color: #001080">value</span><span style="color: #000000"> === </span><span style="color: #A31515">&#039;string&#039;</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">string</span><span style="color: #000000"> = </span><span style="color: #795E26">$string</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Erwartete Zeichenfolge&#039;</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// Erwartete Zeichenfolge</span>
+</code></pre>
+				<blockquote>
+					<p>NOTE: By convention a function prefixed with <code>$</code> hasn&#39;t yet received its error.</p>
+				</blockquote>
+				<p>Errors don&#39;t have to be string values, <strong>an error can be <em>anything</em> other than <code>undefined</code></strong>. So yes, this means <code>&#39;&#39;</code>, <code>0</code>, <code>null</code> and <code>false</code> or even <code>() =&gt; {}</code> are all considered to be an error:</p>
+				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">create</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">$string</span><span style="color: #000000"> = </span><span style="color: #795E26">create</span><span style="color: #000000">((</span><span style="color: #001080">value</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #0000FF">typeof</span><span style="color: #000000"> </span><span style="color: #001080">value</span><span style="color: #000000"> === </span><span style="color: #A31515">&#039;string&#039;</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">string</span><span style="color: #000000"> = </span><span style="color: #795E26">$string</span><span style="color: #000000">(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Expected string&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// new Error(&#039;Expected string&#039;)</span>
+</code></pre>
+				<p>Therefore, most of the built-in validation functions expose two versions, one accepting a custom error and another which is pre-loaded with an error string:</p>
+				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">string</span><span style="color: #000000">, </span><span style="color: #001080">$string</span><span style="color: #000000">, </span><span style="color: #001080">number</span><span style="color: #000000">, </span><span style="color: #001080">$number</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected string&#039;</span>
+
+<span style="color: #795E26">number</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected number&#039;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">str</span><span style="color: #000000"> = </span><span style="color: #795E26">$string</span><span style="color: #000000">({ </span><span style="color: #001080">id:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;str.invalid&#039;</span><span style="color: #000000"> });</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">num</span><span style="color: #000000"> = </span><span style="color: #795E26">$number</span><span style="color: #000000">({ </span><span style="color: #001080">id:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;num.invalid&#039;</span><span style="color: #000000"> });</span>
+
+<span style="color: #795E26">str</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// { id: &#039;str.invalid&#039; }</span>
+
+<span style="color: #795E26">num</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// { id: &#039;num.invalid&#039; }</span>
+</code></pre>
+				<p>Additionally, many of the built-in functions accept arguments to offer greater utility:</p>
+				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">length</span><span style="color: #000000">, </span><span style="color: #001080">$length</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-conputer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">between2And3</span><span style="color: #000000"> = </span><span style="color: #795E26">length</span><span style="color: #000000">(</span><span style="color: #098658">2</span><span style="color: #000000">, </span><span style="color: #098658">3</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">between2And3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">between2And3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// Expected length between 2 and 3</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">$tween2And3</span><span style="color: #000000"> = </span><span style="color: #795E26">$length</span><span style="color: #000000">(</span><span style="color: #098658">2</span><span style="color: #000000">, </span><span style="color: #098658">3</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">tween2And3</span><span style="color: #000000"> = </span><span style="color: #795E26">$tween2And3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Invalid&#039;</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">tween2And3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">tween2And3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// Invalid</span>
+</code></pre>
+				<p>You can implement your own validation functions in the same way:</p>
+				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">create</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">$endsWith</span><span style="color: #000000"> = (</span><span style="color: #001080">suffix</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span>
+<span style="color: #000000">  </span><span style="color: #795E26">create</span><span style="color: #000000">((</span><span style="color: #001080">value</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #0000FF">typeof</span><span style="color: #000000"> </span><span style="color: #001080">value</span><span style="color: #000000"> === </span><span style="color: #A31515">&#039;string&#039;</span><span style="color: #000000"> &amp;&amp; </span><span style="color: #001080">value</span><span style="color: #000000">.</span><span style="color: #795E26">endsWith</span><span style="color: #000000">(</span><span style="color: #001080">suffix</span><span style="color: #000000">));</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">endsWith</span><span style="color: #000000"> = (</span><span style="color: #001080">suffix</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span>
+<span style="color: #000000">  </span><span style="color: #795E26">$endsWith</span><span style="color: #000000">(</span><span style="color: #A31515">`Expected string to end with &quot;</span><span style="color: #0000FF">${</span><span style="color: #001080">suffix</span><span style="color: #0000FF">}</span><span style="color: #A31515">&quot;`</span><span style="color: #000000">);</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">jpeg</span><span style="color: #000000"> = </span><span style="color: #795E26">endsWith</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;.jpeg&#039;</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">jpeg</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat.jpeg&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">jpeg</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat.png&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected string to end with &quot;.jpeg&quot;&#039;</span>
+</code></pre>
+				<p>These can then be customised and composed with one another into more sophisticated validation logic:</p>
+				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">create</span><span style="color: #000000">, </span><span style="color: #001080">or</span><span style="color: #000000">, </span><span style="color: #001080">and</span><span style="color: #000000">, </span><span style="color: #001080">length</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">endsWith</span><span style="color: #000000"> = (</span><span style="color: #001080">suffix</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span>
+<span style="color: #000000">  </span><span style="color: #795E26">create</span><span style="color: #000000">((</span><span style="color: #001080">value</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #0000FF">typeof</span><span style="color: #000000"> </span><span style="color: #001080">value</span><span style="color: #000000"> === </span><span style="color: #A31515">&#039;string&#039;</span><span style="color: #000000"> &amp;&amp; </span><span style="color: #001080">value</span><span style="color: #000000">.</span><span style="color: #795E26">endsWith</span><span style="color: #000000">(</span><span style="color: #001080">suffix</span><span style="color: #000000">))(</span>
+<span style="color: #000000">    </span><span style="color: #A31515">`Expected string to end with &quot;</span><span style="color: #0000FF">${</span><span style="color: #001080">suffix</span><span style="color: #0000FF">}</span><span style="color: #A31515">&quot;`</span>
+<span style="color: #000000">  );</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">jpeg</span><span style="color: #000000"> = </span><span style="color: #795E26">or</span><span style="color: #000000">(</span><span style="color: #795E26">endsWith</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;.jpeg&#039;</span><span style="color: #000000">), </span><span style="color: #795E26">endsWith</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;.jpg&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">image</span><span style="color: #000000"> = </span><span style="color: #795E26">and</span><span style="color: #000000">(</span><span style="color: #001080">jpeg</span><span style="color: #000000">, </span><span style="color: #795E26">length</span><span style="color: #000000">(</span><span style="color: #098658">10</span><span style="color: #000000">, </span><span style="color: #098658">15</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">image</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;catamaran.jpg&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">image</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;catamaran.png&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// (Expected string to end with &quot;.jpeg&quot; or expected string to end with &quot;.jpg&quot;)</span>
+
+<span style="color: #795E26">image</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat.jpeg&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// Expected length between 10 and 15</span>
+
+<span style="color: #795E26">image</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat.png&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// ((Expected string to end with &quot;.jpeg&quot; or expected string to end with &quot;.jpg&quot;) and expected length between 10 and 15)</span>
+</code></pre>
+				<p>Some built-in validation functions return more exotic data structures which, like <code>undefined</code>, are also not considered to be an error:</p>
+				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">object</span><span style="color: #000000">, </span><span style="color: #001080">string</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">user</span><span style="color: #000000"> = </span><span style="color: #795E26">object</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #001080">string</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #795E26">user</span><span style="color: #000000">({ </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;Hamilton&#039;</span><span style="color: #000000"> });</span>
+<span style="color: #008000">// {}</span>
+
+<span style="color: #795E26">user</span><span style="color: #000000">({ </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #098658">44</span><span style="color: #000000"> });</span>
+<span style="color: #008000">// { name: &#039;Expected string&#039; }</span>
+</code></pre>
+				<blockquote>
+					<p>NOTE: <code>{}</code> returned by <code>object</code> is a special data type and a plain <code>{}</code> is still considered an error.</p>
+				</blockquote>
+				<p>This exposes a richer interface to consume more complex validation errors. The tradeoff being you can&#39;t just check if the value is <code>undefined</code> to determine if there&#39;s an error and instead must use a dedicated <code>isError</code> function:</p>
+				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">object</span><span style="color: #000000">, </span><span style="color: #001080">string</span><span style="color: #000000">, </span><span style="color: #001080">isError</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">user</span><span style="color: #000000"> = </span><span style="color: #795E26">object</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #001080">string</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">error</span><span style="color: #000000"> = </span><span style="color: #795E26">user</span><span style="color: #000000">({ </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;Hamilton&#039;</span><span style="color: #000000"> });</span>
+<span style="color: #008000">// {}</span>
+
+<span style="color: #795E26">isError</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">);</span>
+<span style="color: #008000">// false</span>
+</code></pre>
+				<blockquote>
+					<p>NOTE: <code>hasError</code> is additionally exported, which is merely an alias for <code>isError</code>.</p>
+				</blockquote>
+				<p>Sometimes validation depends on other values. By convention all validation functions receive their parent values as subsequent arguments:</p>
+				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">object</span><span style="color: #000000">, </span><span style="color: #001080">string</span><span style="color: #000000">, </span><span style="color: #001080">create</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">user</span><span style="color: #000000"> = </span><span style="color: #795E26">object</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">password:</span><span style="color: #000000"> </span><span style="color: #001080">string</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">repeatPassword:</span><span style="color: #000000"> </span><span style="color: #795E26">create</span><span style="color: #000000">((</span><span style="color: #001080">value</span><span style="color: #000000">, </span><span style="color: #001080">parent</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">value</span><span style="color: #000000"> === </span><span style="color: #001080">parent</span><span style="color: #000000">.</span><span style="color: #001080">password</span><span style="color: #000000">)(</span>
+<span style="color: #000000">    </span><span style="color: #A31515">&#039;Expected to match password&#039;</span>
+<span style="color: #000000">  ),</span>
+<span style="color: #000000">  </span><span style="color: #001080">nested:</span><span style="color: #000000"> </span><span style="color: #795E26">object</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #001080">repeatPassword:</span><span style="color: #000000"> </span><span style="color: #795E26">create</span><span style="color: #000000">(</span>
+<span style="color: #000000">      (</span><span style="color: #001080">value</span><span style="color: #000000">, </span><span style="color: #001080">parent</span><span style="color: #000000">, </span><span style="color: #001080">grandParent</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">value</span><span style="color: #000000"> === </span><span style="color: #001080">grandParent</span><span style="color: #000000">.</span><span style="color: #001080">password</span>
+<span style="color: #000000">    )(</span><span style="color: #A31515">&#039;Expected to match password&#039;</span><span style="color: #000000">)</span>
+<span style="color: #000000">  })</span>
+<span style="color: #000000">});</span>
+</code></pre>
+				<p>Lastly, there are a number of functions to help consume errors:</p>
+				<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">object</span><span style="color: #000000">, </span><span style="color: #001080">string</span><span style="color: #000000">, </span><span style="color: #001080">isError</span><span style="color: #000000">, </span><span style="color: #001080">listErrors</span><span style="color: #000000">, </span><span style="color: #001080">assert</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">user</span><span style="color: #000000"> = </span><span style="color: #795E26">object</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">firstName:</span><span style="color: #000000"> </span><span style="color: #001080">string</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">lastName:</span><span style="color: #000000"> </span><span style="color: #001080">string</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">error</span><span style="color: #000000"> = </span><span style="color: #795E26">user</span><span style="color: #000000">({ </span><span style="color: #001080">firstName:</span><span style="color: #000000"> </span><span style="color: #098658">44</span><span style="color: #000000"> });</span>
+<span style="color: #008000">// { firstName: &#039;Expected string&#039;, lastName: &#039;Expected string&#039; }</span>
+
+<span style="color: #795E26">isError</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">);</span>
+<span style="color: #008000">// true</span>
+
+<span style="color: #795E26">listErrors</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">);</span>
+<span style="color: #008000">// [{ path: &#039;firstName&#039;, err: &#039;Expected string&#039; }, { path: &#039;lastName&#039;, err: &#039;Expected string&#039; }]</span>
+
+<span style="color: #795E26">assert</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">);</span>
+<span style="color: #008000">// throw new ValidationError(`Invalid: first of 2 errors: firstName: Expected string`)</span>
+</code></pre>
+				<a href="#api" id="api" style="color: inherit; text-decoration: none;">
+					<h2>API</h2>
+				</a>
+				<a href="#types" id="types" style="color: inherit; text-decoration: none;">
+					<h3>Types</h3>
+				</a>
+				<a href="#validatorlterrgt" id="validatorlterrgt" style="color: inherit; text-decoration: none;">
+					<h4><code>Validator&lt;Err&gt;</code></h4>
+				</a>
+				<details>
+					<summary>(value: unknown, ...parents: any[]) => Err | undefined</summary>
+					<pre><code class="language-ts"><span style="color: #0000FF">type</span><span style="color: #000000"> </span><span style="color: #267F99">Validator</span><span style="color: #000000">&lt;</span><span style="color: #267F99">Err</span><span style="color: #000000">&gt; = (</span><span style="color: #001080">value</span><span style="color: #000000">: </span><span style="color: #267F99">unknown</span><span style="color: #000000">, ...</span><span style="color: #001080">parents</span><span style="color: #000000">: </span><span style="color: #267F99">any</span><span style="color: #000000">[]) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #267F99">Err</span><span style="color: #000000"> | </span><span style="color: #267F99">undefined</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">fortyFour</span><span style="color: #000000">: </span><span style="color: #267F99">Validator</span><span style="color: #000000">&lt;</span><span style="color: #267F99">string</span><span style="color: #000000">&gt; = (</span><span style="color: #001080">value</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span>
+<span style="color: #001080">value</span><span style="color: #000000"> !== </span><span style="color: #098658">44</span><span style="color: #000000"> ? </span><span style="color: #A31515">&#039;Expected 44&#039;</span><span style="color: #000000"> : </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
+
+</code></pre>
+				</details>
+				<a href="#validatorfactory" id="validatorfactory" style="color: inherit; text-decoration: none;">
+					<h4><code>ValidatorFactory</code></h4>
+				</a>
+				<details>
+					<summary>&lt;Err&gt(err: Err) => Validator&ltErr&gt</summary>
+					<pre><code class="language-ts"><span style="color: #0000FF">type</span><span style="color: #000000"> </span><span style="color: #267F99">ValidatorFactory</span><span style="color: #000000"> = &lt;</span><span style="color: #267F99">Err</span><span style="color: #000000">&gt;(</span><span style="color: #001080">err</span><span style="color: #000000">: </span><span style="color: #267F99">Err</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #267F99">Validator</span><span style="color: #000000">&lt;</span><span style="color: #267F99">Err</span><span style="color: #000000">&gt;;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #795E26">$fortyFour</span><span style="color: #000000">: </span><span style="color: #267F99">ValidatorFactory</span><span style="color: #000000"> = (</span><span style="color: #001080">err</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> (</span><span style="color: #001080">value</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span>
+<span style="color: #000000">  </span><span style="color: #001080">value</span><span style="color: #000000"> !== </span><span style="color: #098658">44</span><span style="color: #000000"> ? </span><span style="color: #001080">err</span><span style="color: #000000"> : </span><span style="color: #0000FF">undefined</span><span style="color: #000000">;</span>
+</code></pre>
+				</details>
+				<a href="#functions" id="functions" style="color: inherit; text-decoration: none;">
+					<h3>Functions</h3>
+				</a>
+				<a href="#listerrors" id="listerrors" style="color: inherit; text-decoration: none;">
+					<h4><code>listErrors</code></h4>
+				</a>
+				<details>
+					<summary>Lists all errors as an array</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">listErrors</span><span style="color: #000000">, </span><span style="color: #001080">object</span><span style="color: #000000">, </span><span style="color: #001080">string</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">user</span><span style="color: #000000"> = </span><span style="color: #795E26">object</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #001080">string</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">picture:</span><span style="color: #000000"> </span><span style="color: #795E26">object</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #001080">url:</span><span style="color: #000000"> </span><span style="color: #001080">string</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">width:</span><span style="color: #000000"> </span><span style="color: #001080">string</span>
+<span style="color: #000000">  })</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">errors</span><span style="color: #000000"> = </span><span style="color: #795E26">user</span><span style="color: #000000">({});</span>
+
+<span style="color: #795E26">listErrors</span><span style="color: #000000">(</span><span style="color: #001080">errors</span><span style="color: #000000">);</span>
+<span style="color: #008000">// [</span>
+<span style="color: #008000">//   { path: &#039;name&#039;, err: &#039;Expected string&#039; },</span>
+<span style="color: #008000">//   { path: &#039;picture.__root&#039;, err: &#039;Expected object&#039; },</span>
+<span style="color: #008000">//   { path: &#039;picture.url&#039;, err: &#039;Expected string&#039; },</span>
+<span style="color: #008000">//   { path: &#039;picture.width&#039;, err: &#039;Expected string&#039; }</span>
+<span style="color: #008000">// ]</span>
+</code></pre>
+				</details>
+				<a href="#iserror--haserror" id="iserror--haserror" style="color: inherit; text-decoration: none;">
+					<h4><code>isError</code> / <code>hasError</code></h4>
+				</a>
+				<details>
+					<summary>Returns true if value is an error, false otherwise</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">isError</span><span style="color: #000000">, </span><span style="color: #001080">hasError</span><span style="color: #000000">, </span><span style="color: #001080">string</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">error</span><span style="color: #000000"> = </span><span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">isError</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">);</span>
+<span style="color: #008000">// true</span>
+
+<span style="color: #795E26">hasError</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">);</span>
+<span style="color: #008000">// true</span>
+</code></pre>
+				</details>
+				<a href="#assert" id="assert" style="color: inherit; text-decoration: none;">
+					<h4><code>assert</code></h4>
+				</a>
+				<details>
+					<summary>Throws if value is an error</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">assert</span><span style="color: #000000">, </span><span style="color: #001080">string</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">error</span><span style="color: #000000"> = </span><span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">assert</span><span style="color: #000000">(</span><span style="color: #001080">error</span><span style="color: #000000">);</span>
+<span style="color: #008000">// throw new ValidationError(&#039;Invalid: first of 1 errors: Expected string&#039;);</span>
+</code></pre>
+				</details>
+				<a href="#create" id="create" style="color: inherit; text-decoration: none;">
+					<h4><code>create</code></h4>
+				</a>
+				<details>
+					<summary>Accepts a predicate function and returns a ValidatorFactory</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">create</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">is44</span><span style="color: #000000"> = </span><span style="color: #795E26">create</span><span style="color: #000000">((</span><span style="color: #001080">value</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">value</span><span style="color: #000000"> === </span><span style="color: #098658">44</span><span style="color: #000000">)(</span><span style="color: #A31515">&#039;Expected 44&#039;</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">is44</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">is44</span><span style="color: #000000">(</span><span style="color: #098658">33</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected 44&#039;</span>
+</code></pre>
+				</details>
+				<a href="#is" id="is" style="color: inherit; text-decoration: none;">
+					<h4><code>is</code></h4>
+				</a>
+				<details>
+					<summary>Performs a strict equality check with `===`</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">is</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">is44</span><span style="color: #000000"> = </span><span style="color: #795E26">is</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">is44</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">is44</span><span style="color: #000000">(</span><span style="color: #098658">33</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected 44&#039;</span>
+</code></pre>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">$is</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">is44</span><span style="color: #000000"> = </span><span style="color: #795E26">$is</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">)(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Expected 44&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">is44</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">is44</span><span style="color: #000000">(</span><span style="color: #098658">33</span><span style="color: #000000">);</span>
+<span style="color: #008000">// new Error(&#039;Expected 44&#039;)</span>
+</code></pre>
+				</details>
+				<a href="#typeof" id="typeof" style="color: inherit; text-decoration: none;">
+					<h4><code>typeOf</code></h4>
+				</a>
+				<details>
+					<summary>Performs a `typeof` check</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">typeOf</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">string</span><span style="color: #000000"> = </span><span style="color: #795E26">typeOf</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;string&#039;</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected typeof string&#039;</span>
+
+</code></pre>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">$typeOf</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">string</span><span style="color: #000000"> = </span><span style="color: #795E26">$typeOf</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;string&#039;</span><span style="color: #000000">)(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Expected typeof string&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// new Error(&#039;Expected typeof string&#039;)</span>
+</code></pre>
+				</details>
+				<a href="#string" id="string" style="color: inherit; text-decoration: none;">
+					<h4><code>string</code></h4>
+				</a>
+				<details>
+					<summary>Performs a `typeof 'string'` check</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">string</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected string&#039;</span>
+
+</code></pre>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">$string</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">string</span><span style="color: #000000"> = </span><span style="color: #795E26">$string</span><span style="color: #000000">(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Expected string&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// new Error(&#039;Expected string&#039;)</span>
+</code></pre>
+				</details>
+				<a href="#number" id="number" style="color: inherit; text-decoration: none;">
+					<h4><code>number</code></h4>
+				</a>
+				<details>
+					<summary>Performs a `typeof 'number'` check</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">number</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #795E26">number</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">string</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected number&#039;</span>
+
+</code></pre>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">$number</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">number</span><span style="color: #000000"> = </span><span style="color: #795E26">$number</span><span style="color: #000000">(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Expected number&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">number</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">number</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// new Error(&#039;Expected number&#039;)</span>
+</code></pre>
+				</details>
+				<a href="#boolean" id="boolean" style="color: inherit; text-decoration: none;">
+					<h4><code>boolean</code></h4>
+				</a>
+				<details>
+					<summary>Performs a `typeof 'boolean'` check</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">boolean</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #795E26">boolean</span><span style="color: #000000">(</span><span style="color: #0000FF">false</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">boolean</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected boolean&#039;</span>
+
+</code></pre>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">$boolean</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">boolean</span><span style="color: #000000"> = </span><span style="color: #795E26">$boolean</span><span style="color: #000000">(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Expected boolean&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">boolean</span><span style="color: #000000">(</span><span style="color: #0000FF">false</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">boolean</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// new Error(&#039;Expected boolean&#039;)</span>
+</code></pre>
+				</details>
+				<a href="#integer" id="integer" style="color: inherit; text-decoration: none;">
+					<h4><code>integer</code></h4>
+				</a>
+				<details>
+					<summary>Performs a `Number.isInteger` check</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">integer</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #795E26">integer</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">integer</span><span style="color: #000000">(</span><span style="color: #098658">44.44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected integer&#039;</span>
+
+</code></pre>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">$integer</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">integer</span><span style="color: #000000"> = </span><span style="color: #795E26">$integer</span><span style="color: #000000">(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Expected integer&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">integer</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">integer</span><span style="color: #000000">(</span><span style="color: #098658">44.44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// new Error(&#039;Expected integer&#039;)</span>
+</code></pre>
+				</details>
+				<a href="#instanceof" id="instanceof" style="color: inherit; text-decoration: none;">
+					<h4><code>instanceOf</code></h4>
+				</a>
+				<details>
+					<summary>Accepts a constructor and checks if `instanceof`</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">instanceOf</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">function</span><span style="color: #000000"> </span><span style="color: #795E26">Foo</span><span style="color: #000000">() {}</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">foo</span><span style="color: #000000"> = </span><span style="color: #795E26">instanceOf</span><span style="color: #000000">(</span><span style="color: #001080">Foo</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">foo</span><span style="color: #000000">(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Foo</span><span style="color: #000000">());</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">foo</span><span style="color: #000000">({});</span>
+<span style="color: #008000">// &#039;Expected instanceof Foo&#039;</span>
+
+</code></pre>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">instanceOf</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">function</span><span style="color: #000000"> </span><span style="color: #795E26">Foo</span><span style="color: #000000">() {}</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">foo</span><span style="color: #000000"> = </span><span style="color: #795E26">$instanceOf</span><span style="color: #000000">(</span><span style="color: #001080">Foo</span><span style="color: #000000">)(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Expected instanceof Foo&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">foo</span><span style="color: #000000">(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Foo</span><span style="color: #000000">());</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">foo</span><span style="color: #000000">({});</span>
+<span style="color: #008000">// new Error(&#039;Expected instanceof Foo&#039;)</span>
+</code></pre>
+				</details>
+				<a href="#or" id="or" style="color: inherit; text-decoration: none;">
+					<h4><code>or</code></h4>
+				</a>
+				<details>
+					<summary>Returns a validator which errors if all validators return an error</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">or</span><span style="color: #000000">, </span><span style="color: #001080">string</span><span style="color: #000000">, </span><span style="color: #001080">number</span><span style="color: #000000">, </span><span style="color: #001080">boolean</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">validator</span><span style="color: #000000"> = </span><span style="color: #795E26">or</span><span style="color: #000000">(</span><span style="color: #001080">string</span><span style="color: #000000">, </span><span style="color: #001080">number</span><span style="color: #000000">, </span><span style="color: #001080">boolean</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #0000FF">true</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #0000FF">null</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;(Expected string or expected number or expected boolean)&#039;</span>
+
+</code></pre>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">$or</span><span style="color: #000000">, </span><span style="color: #001080">$string</span><span style="color: #000000">, </span><span style="color: #001080">$number</span><span style="color: #000000">, </span><span style="color: #001080">$boolean</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">validator</span><span style="color: #000000"> = </span><span style="color: #795E26">$or</span><span style="color: #000000">(</span><span style="color: #001080">$string</span><span style="color: #000000">, </span><span style="color: #001080">$number</span><span style="color: #000000">, </span><span style="color: #001080">$boolean</span><span style="color: #000000">)(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Expected string, number or boolean&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #0000FF">true</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #0000FF">null</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;(Expected string, number or boolean)&#039;</span>
+</code></pre>
+				</details>
+				<a href="#and" id="and" style="color: inherit; text-decoration: none;">
+					<h4><code>and</code></h4>
+				</a>
+				<details>
+					<summary>Returns a validator which errors if one or more validators return an error</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">and</span><span style="color: #000000">, </span><span style="color: #001080">number</span><span style="color: #000000">, </span><span style="color: #001080">min</span><span style="color: #000000">, </span><span style="color: #001080">max</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">validator</span><span style="color: #000000"> = </span><span style="color: #795E26">and</span><span style="color: #000000">(</span><span style="color: #001080">number</span><span style="color: #000000">, </span><span style="color: #795E26">min</span><span style="color: #000000">(</span><span style="color: #098658">1</span><span style="color: #000000">), </span><span style="color: #795E26">max</span><span style="color: #000000">(</span><span style="color: #098658">5</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #098658">3</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #098658">6</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;(Expected min 1 and expected max 5)&#039;</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;(Expected number and expected min 1 and expected max 5)&#039;</span>
+
+</code></pre>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">$and</span><span style="color: #000000">, </span><span style="color: #001080">$number</span><span style="color: #000000">, </span><span style="color: #001080">$min</span><span style="color: #000000">, </span><span style="color: #001080">$max</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">validator</span><span style="color: #000000"> = </span><span style="color: #795E26">$and</span><span style="color: #000000">(</span><span style="color: #001080">$number</span><span style="color: #000000">, </span><span style="color: #795E26">$min</span><span style="color: #000000">(</span><span style="color: #098658">1</span><span style="color: #000000">), </span><span style="color: #795E26">$max</span><span style="color: #000000">(</span><span style="color: #098658">5</span><span style="color: #000000">))(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Expected number between 1 and 5 inclusive&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #098658">3</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #098658">6</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected number between 1 and 5 inclusive&#039;</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected number between 1 and 5 inclusive&#039;</span>
+</code></pre>
+				</details>
+				<a href="#array" id="array" style="color: inherit; text-decoration: none;">
+					<h4><code>array</code></h4>
+				</a>
+				<details>
+					<summary>Checks the value is an array and each element passes the validator</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">array</span><span style="color: #000000">, </span><span style="color: #001080">string</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">validator</span><span style="color: #000000"> = </span><span style="color: #795E26">array</span><span style="color: #000000">(</span><span style="color: #001080">string</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">]);</span>
+<span style="color: #008000">// []</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">([]);</span>
+<span style="color: #008000">// []</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// [&#039;Expected array&#039;]</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">([</span><span style="color: #098658">44</span><span style="color: #000000">]);</span>
+<span style="color: #008000">// [&#039;Expected string&#039;]</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">([</span><span style="color: #098658">44</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #0000FF">false</span><span style="color: #000000">]);</span>
+<span style="color: #008000">// [&#039;Expected string&#039;, undefined, &#039;Expected string&#039;]</span>
+
+</code></pre>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">$array</span><span style="color: #000000">, </span><span style="color: #001080">string</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">validator</span><span style="color: #000000"> = </span><span style="color: #795E26">$array</span><span style="color: #000000">(</span><span style="color: #001080">string</span><span style="color: #000000">)(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Expected array&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">]);</span>
+<span style="color: #008000">// []</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">([]);</span>
+<span style="color: #008000">// []</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// [new Error(&#039;Expected array&#039;)]</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">([</span><span style="color: #098658">44</span><span style="color: #000000">]);</span>
+<span style="color: #008000">// [&#039;Expected string&#039;]</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">([</span><span style="color: #098658">44</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #0000FF">false</span><span style="color: #000000">]);</span>
+<span style="color: #008000">// [&#039;Expected string&#039;, undefined, &#039;Expected string&#039;]</span>
+</code></pre>
+				</details>
+				<a href="#maxlength" id="maxlength" style="color: inherit; text-decoration: none;">
+					<h4><code>maxLength</code></h4>
+				</a>
+				<p>// TODO: Redo this one</p>
+				<details>
+					<summary>Checks the value is a string or an array and has a length no greater than the length specified</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">maxLength</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">validator</span><span style="color: #000000"> = </span><span style="color: #795E26">maxLength</span><span style="color: #000000">(</span><span style="color: #098658">3</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;dog&#039;</span><span style="color: #000000">]);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected max length 3&#039;</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat, &#039;</span><span style="color: #001080">dog</span><span style="color: #A31515">&#039;, 44, false])</span><span style="color: #CD3131">;</span>
+<span style="color: #008000">// &#039;Expected max length 3&#039;</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected max length 3&#039;</span>
+
+</code></pre>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">$maxLength</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">validator</span><span style="color: #000000"> = </span><span style="color: #795E26">$maxLength</span><span style="color: #000000">(</span><span style="color: #098658">3</span><span style="color: #000000">)(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Expected max length 3&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;dog&#039;</span><span style="color: #000000">]);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// new Error(&#039;Expected max length 3&#039;)</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat, &#039;</span><span style="color: #001080">dog</span><span style="color: #A31515">&#039;, 44, false])</span><span style="color: #CD3131">;</span>
+<span style="color: #008000">// new Error(&#039;Expected max length 3&#039;)</span>
+
+<span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// new Error(&#039;Expected max length 3&#039;)</span>
+</code></pre>
+				</details>
+				<a href="#minlength" id="minlength" style="color: inherit; text-decoration: none;">
+					<h4><code>minLength</code></h4>
+				</a>
+				<details>
+					<summary>Checks the value is a string or an array and has a length no less than the length specified</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">minLength</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">minLength3</span><span style="color: #000000"> = </span><span style="color: #795E26">minLength</span><span style="color: #000000">(</span><span style="color: #098658">3</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">minLength3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">minLength3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">minLength3</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat, &#039;</span><span style="color: #001080">catamaran</span><span style="color: #A31515">&#039;, 44])</span><span style="color: #CD3131">;</span>
+<span style="color: #795E26">minLength3</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat, &#039;</span><span style="color: #001080">catamaran</span><span style="color: #A31515">&#039;, 44, false])</span><span style="color: #CD3131">;</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">minLength3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;ca&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">minLength3</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">]);</span>
+<span style="color: #795E26">minLength3</span><span style="color: #000000">(</span><span style="color: #0000FF">true</span><span style="color: #000000">);</span>
+<span style="color: #008000">// &#039;Expected min length 3&#039;</span>
+
+</code></pre>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">$minLength</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">minLength3</span><span style="color: #000000"> = </span><span style="color: #795E26">minLength</span><span style="color: #000000">(</span><span style="color: #098658">3</span><span style="color: #000000">)(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Expected min length 3&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">minLength3</span><span style="color: #000000"> = </span><span style="color: #795E26">minLength</span><span style="color: #000000">(</span><span style="color: #098658">3</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">minLength3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">minLength3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">minLength3</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat, &#039;</span><span style="color: #001080">catamaran</span><span style="color: #A31515">&#039;, 44])</span><span style="color: #CD3131">;</span>
+<span style="color: #795E26">minLength3</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat, &#039;</span><span style="color: #001080">catamaran</span><span style="color: #A31515">&#039;, 44, false])</span><span style="color: #CD3131">;</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">minLength3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;ca&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">minLength3</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">]);</span>
+<span style="color: #795E26">minLength3</span><span style="color: #000000">(</span><span style="color: #0000FF">true</span><span style="color: #000000">);</span>
+<span style="color: #008000">// new Error(&#039;Expected min length 3&#039;)</span>
+</code></pre>
+				</details>
+				<a href="#length" id="length" style="color: inherit; text-decoration: none;">
+					<h4><code>length</code></h4>
+				</a>
+				<details>
+					<summary>Checks the value is a string or an array and has a length between the min and max length specified</summary>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">length</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">lengthBetween1And3</span><span style="color: #000000"> = </span><span style="color: #795E26">length</span><span style="color: #000000">(</span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #098658">3</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;c&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;ca&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">]);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">]);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">, </span><span style="color: #098658">44</span><span style="color: #000000">]);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">([]);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">, </span><span style="color: #098658">44</span><span style="color: #000000">, </span><span style="color: #0000FF">true</span><span style="color: #000000">]);</span>
+<span style="color: #008000">// &#039;Expected length between 1 and 3&#039;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">length2</span><span style="color: #000000"> = </span><span style="color: #795E26">length</span><span style="color: #000000">(</span><span style="color: #098658">2</span><span style="color: #000000">);</span>
+
+<span style="color: #795E26">length2</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;ca&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">length2</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">]);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">length2</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">length2</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">length2</span><span style="color: #000000">([]);</span>
+<span style="color: #795E26">length2</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">, </span><span style="color: #098658">44</span><span style="color: #000000">]);</span>
+<span style="color: #008000">// &#039;Expected length 2&#039;</span>
+
+</code></pre>
+					<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">$length</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ok-computer&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">lengthBetween1And3</span><span style="color: #000000"> = </span><span style="color: #795E26">$length</span><span style="color: #000000">(</span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #098658">3</span><span style="color: #000000">)(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Expected length between 1 and 3&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;c&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;ca&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">]);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">]);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">, </span><span style="color: #098658">44</span><span style="color: #000000">]);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">([]);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">, </span><span style="color: #098658">44</span><span style="color: #000000">, </span><span style="color: #0000FF">true</span><span style="color: #000000">]);</span>
+<span style="color: #795E26">lengthBetween1And3</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// new Error(&#039;Expected length between 1 and 3&#039;)</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">length2</span><span style="color: #000000"> = </span><span style="color: #795E26">$length</span><span style="color: #000000">(</span><span style="color: #098658">2</span><span style="color: #000000">)(</span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Error</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Expected length 2&#039;</span><span style="color: #000000">));</span>
+
+<span style="color: #795E26">length2</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;ca&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">length2</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">]);</span>
+<span style="color: #008000">// undefined</span>
+
+<span style="color: #795E26">length2</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">length2</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">length2</span><span style="color: #000000">([]);</span>
+<span style="color: #795E26">length2</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;catamaran&#039;</span><span style="color: #000000">, </span><span style="color: #098658">44</span><span style="color: #000000">]);</span>
+<span style="color: #795E26">length2</span><span style="color: #000000">(</span><span style="color: #098658">44</span><span style="color: #000000">);</span>
+<span style="color: #008000">// new Error(&#039;Expected length 2&#039;)</span>
+</code></pre>
+				</details>
+				<a href="#licence" id="licence" style="color: inherit; text-decoration: none;">
+					<h2>Licence</h2>
+				</a>
+				<p>Ok Computer is released under the under terms of the <a href="https://github.com/richardscarrott/ok-computer/blob/master/LICENSE">MIT License</a>.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="modules.html">Exports</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-class">
+						<a href="classes/ValidationError.html" class="tsd-kind-icon">Validation<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/Dictionary.html" class="tsd-kind-icon">Dictionary</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/ErrItem.html" class="tsd-kind-icon">Err<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#Maybe" class="tsd-kind-icon">Maybe</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#Validator" class="tsd-kind-icon">Validator</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#ValidatorFactory" class="tsd-kind-icon">Validator<wbr>Factory</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#ValidatorFactoryNoInfer" class="tsd-kind-icon">Validator<wbr>Factory<wbr>NoInfer</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#ValidatorWithStructure" class="tsd-kind-icon">Validator<wbr>With<wbr>Structure</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#_and" class="tsd-kind-icon">$and</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#_anyArray" class="tsd-kind-icon">$any<wbr>Array</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#_array" class="tsd-kind-icon">$array</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#_boolean" class="tsd-kind-icon">$boolean</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#_email" class="tsd-kind-icon">$email</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#_includes" class="tsd-kind-icon">$includes</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#_instanceOf" class="tsd-kind-icon">$instance<wbr>Of</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#_integer" class="tsd-kind-icon">$integer</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#_is" class="tsd-kind-icon">$is</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#_length" class="tsd-kind-icon">$length</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#_match" class="tsd-kind-icon">$match</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#_max" class="tsd-kind-icon">$max</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#_maxLength" class="tsd-kind-icon">$max<wbr>Length</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#_min" class="tsd-kind-icon">$min</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#_minLength" class="tsd-kind-icon">$min<wbr>Length</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#_not" class="tsd-kind-icon">$not</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#_nullish" class="tsd-kind-icon">$nullish</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#_number" class="tsd-kind-icon">$number</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#_object" class="tsd-kind-icon">$object</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#_oneOf" class="tsd-kind-icon">$one<wbr>Of</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#_or" class="tsd-kind-icon">$or</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#_pattern" class="tsd-kind-icon">$pattern</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#_string" class="tsd-kind-icon">$string</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#_tuple" class="tsd-kind-icon">$tuple</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#_typeOf" class="tsd-kind-icon">$type<wbr>Of</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#all" class="tsd-kind-icon">all</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#and" class="tsd-kind-icon">and</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#anyArray" class="tsd-kind-icon">any<wbr>Array</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#array" class="tsd-kind-icon">array</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#assert" class="tsd-kind-icon">assert</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#boolean" class="tsd-kind-icon">boolean</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#create" class="tsd-kind-icon">create</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#each" class="tsd-kind-icon">each</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#email" class="tsd-kind-icon">email</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#hasError" class="tsd-kind-icon">has<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#includes" class="tsd-kind-icon">includes</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#instanceOf" class="tsd-kind-icon">instance<wbr>Of</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#integer" class="tsd-kind-icon">integer</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#is" class="tsd-kind-icon">is</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#isError" class="tsd-kind-icon">is<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#length" class="tsd-kind-icon">length</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#listErrors" class="tsd-kind-icon">list<wbr>Errors</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#match" class="tsd-kind-icon">match</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#max" class="tsd-kind-icon">max</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#maxLength" class="tsd-kind-icon">max<wbr>Length</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#merge" class="tsd-kind-icon">merge</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#min" class="tsd-kind-icon">min</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#minLength" class="tsd-kind-icon">min<wbr>Length</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#not" class="tsd-kind-icon">not</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#nullish" class="tsd-kind-icon">nullish</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#number" class="tsd-kind-icon">number</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#object" class="tsd-kind-icon">object</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#oneOf" class="tsd-kind-icon">one<wbr>Of</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#or" class="tsd-kind-icon">or</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#pattern" class="tsd-kind-icon">pattern</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#string" class="tsd-kind-icon">string</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#tuple" class="tsd-kind-icon">tuple</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#typeOf" class="tsd-kind-icon">type<wbr>Of</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="modules.html#when" class="tsd-kind-icon">when</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="modules.html#withStructure" class="tsd-kind-icon">with<wbr>Structure</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
