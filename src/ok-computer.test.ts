@@ -11,6 +11,7 @@ import {
   $number,
   $boolean,
   $or,
+  $xor,
   $and,
   $array,
   $minLength,
@@ -29,7 +30,23 @@ import {
   all,
   $not,
   not,
-  when
+  when,
+  assert,
+  object,
+  and,
+  or,
+  nullish,
+  string,
+  andPeers,
+  $andPeers,
+  nandPeers,
+  $nandPeers,
+  orPeers,
+  $orPeers,
+  xorPeers,
+  $xorPeers,
+  oxorPeers,
+  $oxorPeers
 } from './ok-computer';
 
 describe('listErrors', () => {
@@ -350,6 +367,41 @@ describe('$or', () => {
 // TODO: Worth testing `or` as completely different code path to `$or`.
 // describe('or', () => {});
 
+describe('$xor', () => {
+  describe('single clause', () => {
+    it('passes if value matches exactly one validator', () => {
+      const err = new Error('Invalid');
+      const validator = $xor($string)(err);
+      expect(validator('A string')).toBe(undefined);
+      expect(validator(123)).toBe(err);
+      expect(validator(true)).toBe(err);
+      expect(validator(undefined)).toBe(err);
+      expect(validator(null)).toBe(err);
+    });
+  });
+
+  describe('multiple clauses', () => {
+    it('passes if value matches exactly one validator', () => {
+      const $even = $and(
+        $number,
+        create((value) => (value as number) % 2 === 0)
+      );
+      const err = new Error('Invalid');
+      const validator = $xor($number, $even)(err);
+      expect(validator(1)).toBe(undefined);
+      expect(validator(2)).toBe(err);
+      expect(validator('A string')).toBe(err);
+      expect(validator(false)).toBe(err);
+      expect(validator([])).toBe(err);
+      expect(validator(undefined)).toBe(err);
+      expect(validator(null)).toBe(err);
+    });
+  });
+});
+
+// TODO: Worth testing `xor` as completely different code path to `$xor`.
+// describe('xor', () => {});
+
 describe('$and', () => {
   describe('single clause', () => {
     it('passes if all values pass', () => {
@@ -378,6 +430,9 @@ describe('$and', () => {
     });
   });
 });
+
+// TODO: Worth testing `and` as completely different code path to `$and`.
+// describe('and', () => {});
 
 describe('$array', () => {
   it('$array(string)', () => {
@@ -1115,5 +1170,1203 @@ describe('when', () => {
     expect(validator2('123')).toBe(undefined);
     expect(validator1(123)).toBe('Invalid');
     expect(validator2(123)).toBe(undefined);
+  });
+});
+
+describe('andPeers', () => {
+  const validator = object({
+    A: and(or(nullish, string), andPeers('B')),
+    B: and(or(nullish, string), andPeers('A'))
+  });
+
+  [
+    {
+      description: 'Both',
+      input: {
+        A: '1',
+        B: '2'
+      },
+      valid: true
+    },
+    {
+      description: 'Neither',
+      input: {},
+      valid: true
+    },
+    {
+      description: 'A only',
+      input: {
+        A: '1'
+      },
+      valid: false
+    },
+    {
+      description: 'B only',
+      input: {
+        B: '2'
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A and invalid B',
+      input: {
+        A: Infinity,
+        B: false
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A',
+      input: {
+        A: /123/,
+        B: '123'
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B',
+      input: {
+        A: '123',
+        B: 123
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A only',
+      input: {
+        A: []
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B only',
+      input: {
+        B: {}
+      },
+      valid: false
+    }
+  ].forEach((t) => {
+    test(t.description, () => {
+      const errors = validator(t.input);
+      if (t.valid) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+
+  const validator2 = object({
+    A: and(or(nullish, string), andPeers('B', 'C')),
+    B: and(or(nullish, string), andPeers('A', 'C')),
+    C: and(or(nullish, string), andPeers('A', 'B'))
+  });
+
+  [
+    [0, 0, 0, 1], // This would be false in an `and` truth table, but we want all-or-nothing (there's no point in a pure 'and' peer fn; just make them all required)
+    [0, 0, 1, 0],
+    [0, 1, 0, 0],
+    [0, 1, 1, 0],
+    [1, 0, 0, 0],
+    [1, 0, 1, 0],
+    [1, 1, 0, 0],
+    [1, 1, 1, 1]
+  ].forEach(([A, B, C, Q]) => {
+    test(`${A} ${B} ${C} ${Q}`, () => {
+      const toVal = (v) => (v ? 'valid value' : undefined);
+      const errors = validator2({ A: toVal(A), B: toVal(B), C: toVal(C) });
+      if (Q) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+});
+
+describe('$andPeers', () => {
+  const validator = object({
+    A: $and(
+      $or($nullish, $string),
+      $andPeers('B')
+    )('Expected nullish or string and peer B to be defined'),
+    B: $and(
+      $or($nullish, $string),
+      $andPeers('A')
+    )('Expected nullish or string and peer A to be defined')
+  });
+
+  [
+    {
+      description: 'Both',
+      input: {
+        A: '1',
+        B: '2'
+      },
+      valid: true
+    },
+    {
+      description: 'Neither',
+      input: {},
+      valid: true
+    },
+    {
+      description: 'A only',
+      input: {
+        A: '1'
+      },
+      valid: false
+    },
+    {
+      description: 'B only',
+      input: {
+        B: '2'
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A and invalid B',
+      input: {
+        A: Infinity,
+        B: false
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A',
+      input: {
+        A: /123/,
+        B: '123'
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B',
+      input: {
+        A: '123',
+        B: 123
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A only',
+      input: {
+        A: []
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B only',
+      input: {
+        B: {}
+      },
+      valid: false
+    }
+  ].forEach((t) => {
+    test(t.description, () => {
+      const errors = validator(t.input);
+      if (t.valid) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+
+  const validator2 = object({
+    A: $and(
+      $or($nullish, $string),
+      $andPeers('B', 'C')
+    )('Expected nullish or string and peers B & C to be defined'),
+    B: $and(
+      $or($nullish, $string),
+      $andPeers('A', 'C')
+    )('Expected nullish or string and peers A & C to be defined'),
+    C: $and(
+      $or($nullish, $string),
+      $andPeers('A', 'B')
+    )('Expected nullish or string and peers A & B to be defined')
+  });
+
+  [
+    [0, 0, 0, 1], // This would be false in an `and` truth table, but we want all-or-nothing (there's no point in a pure 'and' peer fn; just make them all required)
+    [0, 0, 1, 0],
+    [0, 1, 0, 0],
+    [0, 1, 1, 0],
+    [1, 0, 0, 0],
+    [1, 0, 1, 0],
+    [1, 1, 0, 0],
+    [1, 1, 1, 1]
+  ].forEach(([A, B, C, Q]) => {
+    test(`${A} ${B} ${C} ${Q}`, () => {
+      const toVal = (v) => (v ? 'valid value' : undefined);
+      const errors = validator2({ A: toVal(A), B: toVal(B), C: toVal(C) });
+      if (Q) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+});
+
+describe('nandPeer', () => {
+  const validator = object({
+    A: and(or(nullish, string), nandPeers('B')),
+    B: and(or(nullish, string), nandPeers('A'))
+  });
+
+  [
+    {
+      description: 'Both',
+      input: {
+        A: '1',
+        B: '2'
+      },
+      valid: false
+    },
+    {
+      description: 'Neither',
+      input: {},
+      valid: true
+    },
+    {
+      description: 'A only',
+      input: {
+        A: '1'
+      },
+      valid: true
+    },
+    {
+      description: 'B only',
+      input: {
+        B: '2'
+      },
+      valid: true
+    },
+    {
+      description: 'invalid A and invalid B',
+      input: {
+        A: new Date(),
+        B: false
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A',
+      input: {
+        A: new Date(),
+        B: '123'
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B',
+      input: {
+        A: '123',
+        B: new Date()
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A only',
+      input: {
+        A: []
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B only',
+      input: {
+        B: {}
+      },
+      valid: false
+    }
+  ].forEach((t) => {
+    test(t.description, () => {
+      const errors = validator(t.input);
+      if (t.valid) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+
+  const validator2 = object({
+    A: and(or(nullish, string), nandPeers('B', 'C')),
+    B: and(or(nullish, string), nandPeers('A', 'C')),
+    C: and(or(nullish, string), nandPeers('A', 'B'))
+  });
+
+  // https://www.electronics-tutorials.ws/logic/logic_5.html
+  [
+    [0, 0, 0, 1],
+    [0, 0, 1, 1],
+    [0, 1, 0, 1],
+    [0, 1, 1, 1],
+    [1, 0, 0, 1],
+    [1, 0, 1, 1],
+    [1, 1, 0, 1],
+    [1, 1, 1, 0]
+  ].forEach(([A, B, C, Q]) => {
+    test(`${A} ${B} ${C} ${Q}`, () => {
+      const toVal = (v) => (v ? 'valid value' : undefined);
+      const errors = validator2({ A: toVal(A), B: toVal(B), C: toVal(C) });
+      if (Q) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+});
+
+describe('$nandPeer', () => {
+  const validator = object({
+    A: $and(
+      $or($nullish, $string),
+      $nandPeers('B')
+    )('Expected nullish or string and peer B not to be defined'),
+    B: $and(
+      $or($nullish, $string),
+      $nandPeers('A')
+    )('Expected nullish or string and peer C not to be defined')
+  });
+
+  [
+    {
+      description: 'Both',
+      input: {
+        A: '1',
+        B: '2'
+      },
+      valid: false
+    },
+    {
+      description: 'Neither',
+      input: {},
+      valid: true
+    },
+    {
+      description: 'A only',
+      input: {
+        A: '1'
+      },
+      valid: true
+    },
+    {
+      description: 'B only',
+      input: {
+        B: '2'
+      },
+      valid: true
+    },
+    {
+      description: 'invalid A and invalid B',
+      input: {
+        A: new Date(),
+        B: false
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A',
+      input: {
+        A: new Date(),
+        B: '123'
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B',
+      input: {
+        A: '123',
+        B: new Date()
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A only',
+      input: {
+        A: []
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B only',
+      input: {
+        B: {}
+      },
+      valid: false
+    }
+  ].forEach((t) => {
+    test(t.description, () => {
+      const errors = validator(t.input);
+      if (t.valid) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+
+  const validator2 = object({
+    A: $and(
+      $or($nullish, $string),
+      $nandPeers('B', 'C')
+    )('Expected nullish or string and peers B & C not to be defined'),
+    B: $and(
+      $or($nullish, $string),
+      $nandPeers('A', 'C')
+    )('Expected nullish or string and peers A & C not to be defined'),
+    C: $and(
+      $or($nullish, $string),
+      $nandPeers('A', 'B')
+    )('Expected nullish or string and peers A & B not to be defined')
+  });
+
+  // https://www.electronics-tutorials.ws/logic/logic_5.html
+  [
+    [0, 0, 0, 1],
+    [0, 0, 1, 1],
+    [0, 1, 0, 1],
+    [0, 1, 1, 1],
+    [1, 0, 0, 1],
+    [1, 0, 1, 1],
+    [1, 1, 0, 1],
+    [1, 1, 1, 0]
+  ].forEach(([A, B, C, Q]) => {
+    test(`${A} ${B} ${C} ${Q}`, () => {
+      const toVal = (v) => (v ? 'valid value' : undefined);
+      const errors = validator2({ A: toVal(A), B: toVal(B), C: toVal(C) });
+      if (Q) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+});
+
+describe('orPeer', () => {
+  const validator = object({
+    A: and(or(nullish, string), orPeers('B')),
+    B: and(or(nullish, string), orPeers('A'))
+  });
+
+  [
+    {
+      description: 'Both',
+      input: {
+        A: '1',
+        B: '2'
+      },
+      valid: true
+    },
+    {
+      description: 'Neither',
+      input: {},
+      valid: false
+    },
+    {
+      description: 'A only',
+      input: {
+        A: '1'
+      },
+      valid: true
+    },
+    {
+      description: 'B only',
+      input: {
+        B: '2'
+      },
+      valid: true
+    },
+    {
+      description: 'invalid A and invalid B',
+      input: {
+        A: new Date(),
+        B: false
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A',
+      input: {
+        A: new Date(),
+        B: '123'
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B',
+      input: {
+        A: '123',
+        B: new Date()
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A only',
+      input: {
+        A: []
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B only',
+      input: {
+        B: {}
+      },
+      valid: false
+    }
+  ].forEach((t) => {
+    test(t.description, () => {
+      const errors = validator(t.input);
+      if (t.valid) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+
+  const validator2 = object({
+    A: and(or(nullish, string), orPeers('B', 'C')),
+    B: and(or(nullish, string), orPeers('A', 'C')),
+    C: and(or(nullish, string), orPeers('A', 'B'))
+  });
+
+  // https://www.electronics-tutorials.ws/logic/logic_3.html
+  [
+    [0, 0, 0, 0],
+    [0, 0, 1, 1],
+    [0, 1, 0, 1],
+    [0, 1, 1, 1],
+    [1, 0, 0, 1],
+    [1, 0, 1, 1],
+    [1, 1, 0, 1],
+    [1, 1, 1, 1]
+  ].forEach(([A, B, C, Q]) => {
+    test(`${A} ${B} ${C} ${Q}`, () => {
+      const toVal = (v) => (v ? 'valid value' : undefined);
+      const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
+      const errors = validator2(input);
+      if (Q) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+});
+
+describe('$orPeer', () => {
+  const validator = object({
+    A: $and(
+      $or($nullish, $string),
+      $orPeers('B')
+    )('Expected nullish or string and peer B not to be defined'),
+    B: $and(
+      $or($nullish, $string),
+      $orPeers('A')
+    )('Expected nullish or string and peer A not to be defined')
+  });
+
+  [
+    {
+      description: 'Both',
+      input: {
+        A: '1',
+        B: '2'
+      },
+      valid: true
+    },
+    {
+      description: 'Neither',
+      input: {},
+      valid: false
+    },
+    {
+      description: 'A only',
+      input: {
+        A: '1'
+      },
+      valid: true
+    },
+    {
+      description: 'B only',
+      input: {
+        B: '2'
+      },
+      valid: true
+    },
+    {
+      description: 'invalid A and invalid B',
+      input: {
+        A: new Date(),
+        B: false
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A',
+      input: {
+        A: new Date(),
+        B: '123'
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B',
+      input: {
+        A: '123',
+        B: new Date()
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A only',
+      input: {
+        A: []
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B only',
+      input: {
+        B: {}
+      },
+      valid: false
+    }
+  ].forEach((t) => {
+    test(t.description, () => {
+      const errors = validator(t.input);
+      if (t.valid) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+
+  const validator2 = object({
+    A: $and(
+      $or($nullish, $string),
+      $orPeers('B', 'C')
+    )('Expected nullish or string and peers B & C not to be defined'),
+    B: $and(
+      $or($nullish, $string),
+      $orPeers('A', 'C')
+    )('Expected nullish or string and peers A & C not to be defined'),
+    C: $and(
+      $or($nullish, $string),
+      $orPeers('A', 'B')
+    )('Expected nullish or string and peers A & B not to be defined')
+  });
+
+  // https://www.electronics-tutorials.ws/logic/logic_3.html
+  [
+    [0, 0, 0, 0],
+    [0, 0, 1, 1],
+    [0, 1, 0, 1],
+    [0, 1, 1, 1],
+    [1, 0, 0, 1],
+    [1, 0, 1, 1],
+    [1, 1, 0, 1],
+    [1, 1, 1, 1]
+  ].forEach(([A, B, C, Q]) => {
+    test(`${A} ${B} ${C} ${Q}`, () => {
+      const toVal = (v) => (v ? 'valid value' : undefined);
+      const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
+      const errors = validator2(input);
+      if (Q) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+});
+
+describe('xorPeer', () => {
+  const validator = object({
+    A: and(or(nullish, string), xorPeers('B')),
+    B: and(or(nullish, string), xorPeers('A'))
+  });
+
+  [
+    {
+      description: 'Both',
+      input: {
+        A: '1',
+        B: '2'
+      },
+      valid: false
+    },
+    {
+      description: 'Neither',
+      input: {},
+      valid: false
+    },
+    {
+      description: 'A only',
+      input: {
+        A: '1'
+      },
+      valid: true
+    },
+    {
+      description: 'B only',
+      input: {
+        B: '2'
+      },
+      valid: true
+    },
+    {
+      description: 'invalid A and invalid B',
+      input: {
+        A: new Date(),
+        B: false
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A',
+      input: {
+        A: new Date(),
+        B: '123'
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B',
+      input: {
+        A: '123',
+        B: new Date()
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A only',
+      input: {
+        A: []
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B only',
+      input: {
+        B: {}
+      },
+      valid: false
+    }
+  ].forEach((t) => {
+    test(t.description, () => {
+      const errors = validator(t.input);
+      if (t.valid) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+
+  const validator2 = object({
+    A: and(or(nullish, string), xorPeers('B', 'C')),
+    B: and(or(nullish, string), xorPeers('A', 'C')),
+    C: and(or(nullish, string), xorPeers('A', 'B'))
+  });
+
+  // https://www.electronics-tutorials.ws/logic/logic_7.html
+  [
+    [0, 0, 0, 0],
+    [0, 0, 1, 1],
+    [0, 1, 0, 1],
+    [0, 1, 1, 0],
+    [1, 0, 0, 1],
+    [1, 0, 1, 0],
+    [1, 1, 0, 0],
+    [1, 1, 1, 0] // This would be true in an `xor` truth table 🤷‍♂️, but don't think it's what we want?
+  ].forEach(([A, B, C, Q]) => {
+    test(`${A} ${B} ${C} ${Q}`, () => {
+      const toVal = (v) => (v ? 'valid value' : undefined);
+      const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
+      const errors = validator2(input);
+      if (Q) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+});
+
+describe('$xorPeer', () => {
+  const validator = object({
+    A: $and(
+      $or($nullish, $string),
+      $xorPeers('B')
+    )('Expected nullish or string or peer B to be defined'),
+    B: $and(
+      $or($nullish, $string),
+      $xorPeers('A')
+    )('Expected nullish or string or peer A to be defined')
+  });
+
+  [
+    {
+      description: 'Both',
+      input: {
+        A: '1',
+        B: '2'
+      },
+      valid: false
+    },
+    {
+      description: 'Neither',
+      input: {},
+      valid: false
+    },
+    {
+      description: 'A only',
+      input: {
+        A: '1'
+      },
+      valid: true
+    },
+    {
+      description: 'B only',
+      input: {
+        B: '2'
+      },
+      valid: true
+    },
+    {
+      description: 'invalid A and invalid B',
+      input: {
+        A: new Date(),
+        B: false
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A',
+      input: {
+        A: new Date(),
+        B: '123'
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B',
+      input: {
+        A: '123',
+        B: new Date()
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A only',
+      input: {
+        A: []
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B only',
+      input: {
+        B: {}
+      },
+      valid: false
+    }
+  ].forEach((t) => {
+    test(t.description, () => {
+      const errors = validator(t.input);
+      if (t.valid) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+
+  const validator2 = object({
+    A: $and(
+      $or($nullish, $string),
+      $xorPeers('B', 'C')
+    )('Expected nullish or string or peers B or C to be defined'),
+    B: $and(
+      $or($nullish, $string),
+      $xorPeers('A', 'C')
+    )('Expected nullish or string or peers A or C to be defined'),
+    C: $and(
+      $or($nullish, $string),
+      $xorPeers('A', 'B')
+    )('Expected nullish or string or peers A or B to be defined')
+  });
+
+  // https://www.electronics-tutorials.ws/logic/logic_7.html
+  [
+    [0, 0, 0, 0],
+    [0, 0, 1, 1],
+    [0, 1, 0, 1],
+    [0, 1, 1, 0],
+    [1, 0, 0, 1],
+    [1, 0, 1, 0],
+    [1, 1, 0, 0],
+    [1, 1, 1, 0] // This would be true in an `xor` truth table 🤷‍♂️, but don't think it's what we want?
+  ].forEach(([A, B, C, Q]) => {
+    test(`${A} ${B} ${C} ${Q}`, () => {
+      const toVal = (v) => (v ? 'valid value' : undefined);
+      const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
+      const errors = validator2(input);
+      if (Q) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+});
+
+describe('oxorPeer', () => {
+  const validator = object({
+    A: and(or(nullish, string), oxorPeers('B')),
+    B: and(or(nullish, string), oxorPeers('A'))
+  });
+
+  [
+    {
+      description: 'Both',
+      input: {
+        A: '1',
+        B: '2'
+      },
+      valid: false
+    },
+    {
+      description: 'Neither',
+      input: {},
+      valid: true
+    },
+    {
+      description: 'A only',
+      input: {
+        A: '1'
+      },
+      valid: true
+    },
+    {
+      description: 'B only',
+      input: {
+        B: '2'
+      },
+      valid: true
+    },
+    {
+      description: 'invalid A and invalid B',
+      input: {
+        A: new Date(),
+        B: false
+      },
+      valid: false
+    },
+    // TODO: These test cases are missing invalid A and invalid B (w/o the other)
+    {
+      description: 'invalid A',
+      input: {
+        A: new Date(),
+        B: '123'
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B',
+      input: {
+        A: '123',
+        B: new Date()
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A only',
+      input: {
+        A: []
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B only',
+      input: {
+        B: {}
+      },
+      valid: false
+    }
+  ].forEach((t) => {
+    test(t.description, () => {
+      const errors = validator(t.input);
+      if (t.valid) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+
+  const validator2 = object({
+    A: and(or(nullish, string), oxorPeers('B', 'C')),
+    B: and(or(nullish, string), oxorPeers('A', 'C')),
+    C: and(or(nullish, string), oxorPeers('A', 'B'))
+  });
+
+  [
+    [0, 0, 0, 1],
+    [0, 0, 1, 1],
+    [0, 1, 0, 1],
+    [0, 1, 1, 0],
+    [1, 0, 0, 1],
+    [1, 0, 1, 0],
+    [1, 1, 0, 0],
+    [1, 1, 1, 0] // This would be true in an `xor` truth table 🤷‍♂️, but don't think it's what we want?
+  ].forEach(([A, B, C, Q]) => {
+    test(`${A} ${B} ${C} ${Q}`, () => {
+      const toVal = (v) => (v ? 'valid value' : undefined);
+      const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
+      const errors = validator2(input);
+      if (Q) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+});
+
+describe('$oxorPeer', () => {
+  const validator = object({
+    A: $and(
+      $or($nullish, $string),
+      $oxorPeers('B')
+    )('Expected nullish or string or peer B to be defined'),
+    B: $and(
+      $or($nullish, $string),
+      $oxorPeers('A')
+    )('Expected nullish or string or peer B to be defined')
+  });
+
+  [
+    {
+      description: 'Both',
+      input: {
+        A: '1',
+        B: '2'
+      },
+      valid: false
+    },
+    {
+      description: 'Neither',
+      input: {},
+      valid: true
+    },
+    {
+      description: 'A only',
+      input: {
+        A: '1'
+      },
+      valid: true
+    },
+    {
+      description: 'B only',
+      input: {
+        B: '2'
+      },
+      valid: true
+    },
+    {
+      description: 'invalid A and invalid B',
+      input: {
+        A: new Date(),
+        B: false
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A',
+      input: {
+        A: new Date(),
+        B: '123'
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B',
+      input: {
+        A: '123',
+        B: new Date()
+      },
+      valid: false
+    },
+    {
+      description: 'invalid A only',
+      input: {
+        A: []
+      },
+      valid: false
+    },
+    {
+      description: 'invalid B only',
+      input: {
+        B: {}
+      },
+      valid: false
+    }
+  ].forEach((t) => {
+    test(t.description, () => {
+      const errors = validator(t.input);
+      if (t.valid) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
+  });
+
+  const validator2 = object({
+    A: $and(
+      $or($nullish, $string),
+      $oxorPeers('B', 'C')
+    )('Expected nullish or string or peers B or C to be defined'),
+    B: $and(
+      $or($nullish, $string),
+      $oxorPeers('A', 'C')
+    )('Expected nullish or string or peers A or C to be defined'),
+    C: $and(
+      $or($nullish, $string),
+      $oxorPeers('A', 'B')
+    )('Expected nullish or string or peers A or B to be defined')
+  });
+
+  [
+    [0, 0, 0, 1],
+    [0, 0, 1, 1],
+    [0, 1, 0, 1],
+    [0, 1, 1, 0],
+    [1, 0, 0, 1],
+    [1, 0, 1, 0],
+    [1, 1, 0, 0],
+    [1, 1, 1, 0] // This would be true in an `xor` truth table 🤷‍♂️, but don't think it's what we want?
+  ].forEach(([A, B, C, Q]) => {
+    test(`${A} ${B} ${C} ${Q}`, () => {
+      const toVal = (v) => (v ? 'valid value' : undefined);
+      const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
+      const errors = validator2(input);
+      if (Q) {
+        expect(() => assert(errors)).not.toThrow();
+      } else {
+        expect(() => assert(errors)).toThrow();
+      }
+    });
   });
 });
