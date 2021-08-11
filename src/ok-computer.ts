@@ -137,7 +137,34 @@ export const or =
       errors.length === validators.length
         ? errors.map((err, i) => (i === 0 ? err : lowerFirst(err))).join(' or ')
         : undefined;
-    return errors.length > 1 ? `(${errStr})` : errStr;
+    return typeof errStr !== 'undefined' && errors.length > 1
+      ? `(${errStr})`
+      : errStr;
+  };
+
+export const $xor =
+  (...validators: ValidatorFactoryNoInfer[]): ValidatorFactory =>
+  (err) =>
+  (value, ...parents) =>
+    validators
+      .map((validator) => validator(err)(value, ...parents))
+      .filter((err): err is string => isError(err)).length !==
+    validators.length - 1
+      ? err
+      : undefined;
+export const xor =
+  (...validators: Validator<string>[]): Validator<string> =>
+  (value, ...parents) => {
+    const errors = validators
+      .map((validator) => validator(value, ...parents))
+      .filter((err): err is string => isError(err));
+    const errStr =
+      errors.length !== validators.length - 1
+        ? errors.map((err, i) => (i === 0 ? err : err)).join(' xor ')
+        : undefined;
+    return typeof errStr !== 'undefined' && errors.length > 1
+      ? `(${errStr})`
+      : errStr;
   };
 
 export const $and =
@@ -439,3 +466,63 @@ export const $email = $pattern(
   /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/i
 );
 export const email = $email('Expected email');
+
+export const $peer =
+  (key: string) =>
+  (validator: ValidatorFactory) =>
+  <Err>(err: Err) =>
+  (value: unknown, ...parents: any[]) =>
+    validator(err)(parents && parents[0] && parents[0][key], ...parents);
+export const peer =
+  (key: string) =>
+  (validator: Validator<string>) =>
+  (value: unknown, ...parents: any[]) => {
+    const err = validator(parents[0] && parents[0][key], ...parents);
+    return isError(err) ? `Peer "${key}": ${err}` : undefined;
+  };
+
+// HACK: Workaround because `not(nullish)` currently provides a dreadful error message
+const notNullish = $not($nullish)('Expected not nullish');
+
+export const $andPeers = (...keys: string[]) =>
+  $or(
+    $and($nullish, ...keys.map((key) => $peer(key)($nullish))),
+    $and($not($nullish), ...keys.map((key) => $peer(key)($not($nullish))))
+  );
+export const andPeers = (...keys: string[]) =>
+  or(
+    and(nullish, ...keys.map((key) => peer(key)(nullish))),
+    and(notNullish, ...keys.map((key) => peer(key)(notNullish)))
+  );
+
+export const $nandPeers = (...keys: string[]) =>
+  $or(
+    $and($nullish, ...keys.map((key) => $peer(key)($nullish))),
+    $not($and($not($nullish), ...keys.map((key) => $peer(key)($not($nullish)))))
+  );
+export const nandPeers = (...keys: string[]) =>
+  or(
+    and(nullish, ...keys.map((key) => peer(key)(nullish))),
+    not(and(notNullish, ...keys.map((key) => peer(key)(notNullish)))) // WARNING: Poor error msg
+  );
+
+export const $orPeers = (...keys: string[]) =>
+  $or($not($nullish), ...keys.map((key) => $peer(key)($not($nullish))));
+export const orPeers = (...keys: string[]) =>
+  or(notNullish, ...keys.map((key) => peer(key)(notNullish)));
+
+export const $xorPeers = (...keys: string[]) =>
+  $xor($not($nullish), ...keys.map((key) => $peer(key)($not($nullish))));
+export const xorPeers = (...keys: string[]) =>
+  xor(notNullish, ...keys.map((key) => peer(key)(notNullish)));
+
+export const $oxorPeers = (...keys: string[]) =>
+  $or(
+    $and($nullish, ...keys.map((key) => $peer(key)($nullish))),
+    $xor($not($nullish), ...keys.map((key) => $peer(key)($not($nullish))))
+  );
+export const oxorPeers = (...keys: string[]) =>
+  or(
+    and(nullish, ...keys.map((key) => peer(key)(nullish))),
+    xor(notNullish, ...keys.map((key) => peer(key)(notNullish)))
+  );

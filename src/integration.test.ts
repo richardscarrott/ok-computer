@@ -33,7 +33,8 @@ import {
   $max,
   $array,
   $is,
-  $email
+  $email,
+  orPeers
 } from './ok-computer';
 
 describe('Built-in errors', () => {
@@ -42,8 +43,12 @@ describe('Built-in errors', () => {
       username: and(string, length(3, 30)),
       password: or(nullish, pattern(/^[a-zA-Z0-9]{3,30}$/)),
       repeat_password: match('password'),
-      access_token: or(string, number),
-      birth_year: and(integer, min(1900), max(2021)),
+      access_token: and(or(string, number)),
+      birth_year: and(
+        or(nullish, and(integer, min(1900), max(2021))),
+        orPeers('age')
+      ),
+      age: and(or(nullish, number), orPeers('birth_year')),
       email: email,
       addresses: array(
         object({
@@ -65,73 +70,78 @@ describe('Built-in errors', () => {
     );
     const err = new ValidationError(listErrors(errors1));
     expect(err.message).toBe(
-      'Invalid: first of 9 errors: username: (Expected string and expected length between 3 and 30)'
+      'Invalid: first of 10 errors: username: (Expected string and expected length between 3 and 30)'
     );
     expect(err.errors).toEqual(listErrors(errors1));
     expect(errors1).toMatchInlineSnapshot(`
-        Object {
-          "access_token": "(Expected string or expected number)",
-          "addresses": Array [
-            Object {
-              "line1": "(Expected string and expected length between 1 and 255)",
-              "line2": "(Expected undefined or (Expected string and expected length between 1 and 255))",
-              Symbol(structure): true,
-            },
-            Object {
-              "__root": "Expected object",
-              "line1": "(Expected string and expected length between 1 and 255)",
-              "line2": undefined,
-              Symbol(structure): true,
-            },
-          ],
-          "birth_year": "(Expected integer and expected min 1900 and expected max 2021)",
-          "email": "Expected email",
-          "password": undefined,
-          "repeat_password": "Expected to match password",
-          "username": "(Expected string and expected length between 3 and 30)",
-          Symbol(structure): true,
-        }
-      `);
+      Object {
+        "access_token": "(Expected string or expected number)",
+        "addresses": Array [
+          Object {
+            "line1": "(Expected string and expected length between 1 and 255)",
+            "line2": "(Expected undefined or (Expected string and expected length between 1 and 255))",
+            Symbol(structure): true,
+          },
+          Object {
+            "__root": "Expected object",
+            "line1": "(Expected string and expected length between 1 and 255)",
+            "line2": undefined,
+            Symbol(structure): true,
+          },
+        ],
+        "age": "(Expected not nullish or peer \\"birth_year\\": Expected not nullish)",
+        "birth_year": "(Expected not nullish or peer \\"age\\": Expected not nullish)",
+        "email": "Expected email",
+        "password": undefined,
+        "repeat_password": "Expected to match password",
+        "username": "(Expected string and expected length between 3 and 30)",
+        Symbol(structure): true,
+      }
+    `);
     expect(listErrors(errors1)).toMatchInlineSnapshot(`
-        Array [
-          Object {
-            "err": "(Expected string and expected length between 3 and 30)",
-            "path": "username",
-          },
-          Object {
-            "err": "Expected to match password",
-            "path": "repeat_password",
-          },
-          Object {
-            "err": "(Expected string or expected number)",
-            "path": "access_token",
-          },
-          Object {
-            "err": "(Expected integer and expected min 1900 and expected max 2021)",
-            "path": "birth_year",
-          },
-          Object {
-            "err": "Expected email",
-            "path": "email",
-          },
-          Object {
-            "err": "(Expected string and expected length between 1 and 255)",
-            "path": "addresses.0.line1",
-          },
-          Object {
-            "err": "(Expected undefined or (Expected string and expected length between 1 and 255))",
-            "path": "addresses.0.line2",
-          },
-          Object {
-            "err": "Expected object",
-            "path": "addresses.1.__root",
-          },
-          Object {
-            "err": "(Expected string and expected length between 1 and 255)",
-            "path": "addresses.1.line1",
-          },
-        ]
-      `);
+      Array [
+        Object {
+          "err": "(Expected string and expected length between 3 and 30)",
+          "path": "username",
+        },
+        Object {
+          "err": "Expected to match password",
+          "path": "repeat_password",
+        },
+        Object {
+          "err": "(Expected string or expected number)",
+          "path": "access_token",
+        },
+        Object {
+          "err": "(Expected not nullish or peer \\"age\\": Expected not nullish)",
+          "path": "birth_year",
+        },
+        Object {
+          "err": "(Expected not nullish or peer \\"birth_year\\": Expected not nullish)",
+          "path": "age",
+        },
+        Object {
+          "err": "Expected email",
+          "path": "email",
+        },
+        Object {
+          "err": "(Expected string and expected length between 1 and 255)",
+          "path": "addresses.0.line1",
+        },
+        Object {
+          "err": "(Expected undefined or (Expected string and expected length between 1 and 255))",
+          "path": "addresses.0.line2",
+        },
+        Object {
+          "err": "Expected object",
+          "path": "addresses.1.__root",
+        },
+        Object {
+          "err": "(Expected string and expected length between 1 and 255)",
+          "path": "addresses.1.line1",
+        },
+      ]
+    `);
     const errors2 = validator({
       username: 'lh44',
       password: 'password123',
@@ -149,23 +159,24 @@ describe('Built-in errors', () => {
     expect(hasError(errors2)).toBe(false);
     expect(() => assert(errors2)).not.toThrow();
     expect(errors2).toMatchInlineSnapshot(`
-        Object {
-          "access_token": undefined,
-          "addresses": Array [
-            Object {
-              "line1": undefined,
-              "line2": undefined,
-              Symbol(structure): true,
-            },
-          ],
-          "birth_year": undefined,
-          "email": undefined,
-          "password": undefined,
-          "repeat_password": undefined,
-          "username": undefined,
-          Symbol(structure): true,
-        }
-      `);
+      Object {
+        "access_token": undefined,
+        "addresses": Array [
+          Object {
+            "line1": undefined,
+            "line2": undefined,
+            Symbol(structure): true,
+          },
+        ],
+        "age": undefined,
+        "birth_year": undefined,
+        "email": undefined,
+        "password": undefined,
+        "repeat_password": undefined,
+        "username": undefined,
+        Symbol(structure): true,
+      }
+    `);
     expect(listErrors(errors2)).toEqual([]);
   });
 });
