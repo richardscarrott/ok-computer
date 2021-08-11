@@ -1273,7 +1273,7 @@ describe('andPeers', () => {
     [1, 1, 1, 1]
   ].forEach(([A, B, C, Q]) => {
     test(`${A} ${B} ${C} ${Q}`, () => {
-      const toVal = (v) => (v ? 'valid value' : undefined);
+      const toVal = (v: unknown) => (v ? 'valid value' : undefined);
       const errors = validator2({ A: toVal(A), B: toVal(B), C: toVal(C) });
       if (Q) {
         expect(() => assert(errors)).not.toThrow();
@@ -1399,7 +1399,7 @@ describe('$andPeers', () => {
     [1, 1, 1, 1]
   ].forEach(([A, B, C, Q]) => {
     test(`${A} ${B} ${C} ${Q}`, () => {
-      const toVal = (v) => (v ? 'valid value' : undefined);
+      const toVal = (v: unknown) => (v ? 'valid value' : undefined);
       const errors = validator2({ A: toVal(A), B: toVal(B), C: toVal(C) });
       if (Q) {
         expect(() => assert(errors)).not.toThrow();
@@ -1511,7 +1511,7 @@ describe('nandPeer', () => {
     [1, 1, 1, 0]
   ].forEach(([A, B, C, Q]) => {
     test(`${A} ${B} ${C} ${Q}`, () => {
-      const toVal = (v) => (v ? 'valid value' : undefined);
+      const toVal = (v: unknown) => (v ? 'valid value' : undefined);
       const errors = validator2({ A: toVal(A), B: toVal(B), C: toVal(C) });
       if (Q) {
         expect(() => assert(errors)).not.toThrow();
@@ -1638,7 +1638,7 @@ describe('$nandPeer', () => {
     [1, 1, 1, 0]
   ].forEach(([A, B, C, Q]) => {
     test(`${A} ${B} ${C} ${Q}`, () => {
-      const toVal = (v) => (v ? 'valid value' : undefined);
+      const toVal = (v: unknown) => (v ? 'valid value' : undefined);
       const errors = validator2({ A: toVal(A), B: toVal(B), C: toVal(C) });
       if (Q) {
         expect(() => assert(errors)).not.toThrow();
@@ -1750,7 +1750,7 @@ describe('orPeer', () => {
     [1, 1, 1, 1]
   ].forEach(([A, B, C, Q]) => {
     test(`${A} ${B} ${C} ${Q}`, () => {
-      const toVal = (v) => (v ? 'valid value' : undefined);
+      const toVal = (v: unknown) => (v ? 'valid value' : undefined);
       const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
       const errors = validator2(input);
       if (Q) {
@@ -1878,7 +1878,7 @@ describe('$orPeer', () => {
     [1, 1, 1, 1]
   ].forEach(([A, B, C, Q]) => {
     test(`${A} ${B} ${C} ${Q}`, () => {
-      const toVal = (v) => (v ? 'valid value' : undefined);
+      const toVal = (v: unknown) => (v ? 'valid value' : undefined);
       const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
       const errors = validator2(input);
       if (Q) {
@@ -1991,7 +1991,7 @@ describe('xorPeer', () => {
     [1, 1, 1, 0] // This would be true in an `xor` truth table 🤷‍♂️, but don't think it's what we want?
   ].forEach(([A, B, C, Q]) => {
     test(`${A} ${B} ${C} ${Q}`, () => {
-      const toVal = (v) => (v ? 'valid value' : undefined);
+      const toVal = (v: unknown) => (v ? 'valid value' : undefined);
       const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
       const errors = validator2(input);
       if (Q) {
@@ -2119,7 +2119,7 @@ describe('$xorPeer', () => {
     [1, 1, 1, 0] // This would be true in an `xor` truth table 🤷‍♂️, but don't think it's what we want?
   ].forEach(([A, B, C, Q]) => {
     test(`${A} ${B} ${C} ${Q}`, () => {
-      const toVal = (v) => (v ? 'valid value' : undefined);
+      const toVal = (v: unknown) => (v ? 'valid value' : undefined);
       const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
       const errors = validator2(input);
       if (Q) {
@@ -2232,7 +2232,7 @@ describe('oxorPeer', () => {
     [1, 1, 1, 0] // This would be true in an `xor` truth table 🤷‍♂️, but don't think it's what we want?
   ].forEach(([A, B, C, Q]) => {
     test(`${A} ${B} ${C} ${Q}`, () => {
-      const toVal = (v) => (v ? 'valid value' : undefined);
+      const toVal = (v: unknown) => (v ? 'valid value' : undefined);
       const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
       const errors = validator2(input);
       if (Q) {
@@ -2359,7 +2359,7 @@ describe('$oxorPeer', () => {
     [1, 1, 1, 0] // This would be true in an `xor` truth table 🤷‍♂️, but don't think it's what we want?
   ].forEach(([A, B, C, Q]) => {
     test(`${A} ${B} ${C} ${Q}`, () => {
-      const toVal = (v) => (v ? 'valid value' : undefined);
+      const toVal = (v: unknown) => (v ? 'valid value' : undefined);
       const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
       const errors = validator2(input);
       if (Q) {
