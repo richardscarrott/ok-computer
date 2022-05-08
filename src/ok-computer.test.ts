@@ -1310,7 +1310,7 @@ describe('all', () => {
 });
 
 describe('object', () => {
-  it('returns a root error if value is not an object', () => {
+  it('returns a root error if value is not a plain object', () => {
     const validator = object({});
     expect(validator(undefined)).toEqual(
       asStructure({ [OBJECT_ROOT]: 'Expected object' })
@@ -1370,6 +1370,43 @@ describe('object', () => {
         }),
         favouriteColors: and(array(string), maxLength(3))
       });
+      const validUser = {
+        firstName: 'Lewis',
+        lastName: 'Hamilton',
+        address: {
+          line1: '123 Fake street',
+          line2: 'Somehwere?',
+          city: 'Nowhere',
+          state: 'EW',
+          zip: '10001',
+          country: 'GB',
+          [Symbol.for('test')]: {
+            [Symbol.for('test2')]: 'foo'
+          }
+        },
+        favouriteColors: ['Blue', 'Red']
+      };
+      expect(validator(validUser)).toMatchInlineSnapshot(`
+        Object {
+          "address": Object {
+            "city": undefined,
+            "country": undefined,
+            "line1": undefined,
+            "line2": undefined,
+            "state": undefined,
+            "zip": undefined,
+            Symbol(test): Object {
+              Symbol(test2): undefined,
+            },
+          },
+          "favouriteColors": undefined,
+          "firstName": undefined,
+          "lastName": undefined,
+          "middleName": undefined,
+        }
+      `);
+      expect(isError(validator(validUser))).toBe(false);
+      expect(hasError(validator(validUser))).toBe(false);
       const invalidUser = {
         firstName: 'Richard',
         middleName: null,
@@ -1378,7 +1415,7 @@ describe('object', () => {
           line1: 'asd',
           line2: 'asd'
         },
-        favoriteColors: ['1', '2', '3', '4']
+        favouriteColors: ['1', '2', '3', '4']
       };
       const errors = validator(invalidUser);
       expect(hasError(errors)).toBe(true);
@@ -1455,6 +1492,62 @@ describe('object', () => {
         ]
       `);
     });
+
+    it('returns a root error if unknown properties are found', () => {
+      const validator = object({
+        firstName: and(string, minLength(1), maxLength(255)),
+        middleName: or(nullish, and(string, minLength(1), maxLength(255))),
+        lastName: and(string, minLength(1), maxLength(255))
+      });
+      const valid = validator({ firstName: 'Lewis', lastName: 'Hamilton' });
+      expect(valid).toMatchInlineSnapshot(`
+        Object {
+          "firstName": undefined,
+          "lastName": undefined,
+          "middleName": undefined,
+        }
+      `);
+      expect(isError(valid)).toBe(false);
+      const invalid = validator({
+        firstName: 'Lewis',
+        lastName: 'Hamilton',
+        unknownProp1: 'property',
+        unknownProp2: ['prop']
+      });
+      expect(invalid).toMatchInlineSnapshot(`
+        Object {
+          "firstName": undefined,
+          "lastName": undefined,
+          "middleName": undefined,
+          Symbol(ok-computer.object-root): "Unknown properties \\"unknownProp1\\", \\"unknownProp2\\"",
+        }
+      `);
+      expect(isError(invalid)).toBe(true);
+    });
+
+    it('allows call sites to opt-out of unknown property check', () => {
+      const validator = object(
+        {
+          firstName: and(string, minLength(1), maxLength(255)),
+          middleName: or(nullish, and(string, minLength(1), maxLength(255))),
+          lastName: and(string, minLength(1), maxLength(255))
+        },
+        { allowUnknown: true }
+      );
+      const valid = validator({
+        firstName: 'Lewis',
+        lastName: 'Hamilton',
+        unknownProp1: 'property'
+      });
+      expect(valid).toMatchInlineSnapshot(`
+        Object {
+          "firstName": undefined,
+          "lastName": undefined,
+          "middleName": undefined,
+        }
+      `);
+      expect(isError(valid)).toBe(false);
+    });
   });
 
   it('supports introspection', () => {
@@ -1481,16 +1574,14 @@ describe('object', () => {
 
 describe('merge', () => {
   it('merges object validators', () => {
-    const validator1 = object({
-      firstName: string
-    });
-    const validator2 = object({
-      lastName: or(nullish, string),
-      age: number
-    });
-    const validator3 = object({
-      age: integer
-    });
+    // NOTE: `merge` currently only works when passing `allowUnknown: true`
+    // into the input validators 😔
+    const validator1 = object({ firstName: string }, { allowUnknown: true });
+    const validator2 = object(
+      { lastName: or(nullish, string), age: number },
+      { allowUnknown: true }
+    );
+    const validator3 = object({ age: integer }, { allowUnknown: true });
     const validator4 = merge(validator1, validator2, validator3);
     expect(validator4('foo')).toEqual(
       asStructure({

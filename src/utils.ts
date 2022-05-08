@@ -26,7 +26,7 @@ export const isPrimitiveValue = (
 };
 
 // https://github.com/sindresorhus/is-plain-obj/blob/6a4cfe72714db0b90fcf6e1f78a9b118b98d44fa/index.js
-export const isPlainObject = (value: unknown) => {
+export const isPlainObject = (value: unknown): value is Object => {
   if (Object.prototype.toString.call(value) !== '[object Object]') {
     return false;
   }

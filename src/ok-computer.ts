@@ -343,7 +343,8 @@ export const object =
       (val: any, ...parents: any[]) => any
     >
   >(
-    validators: Validators
+    validators: Validators,
+    { allowUnknown = false }: { allowUnknown?: boolean } = {}
   ): StructValidator<
     ObjReturnTypes<Validators> & {
       [OBJECT_ROOT]?: string;
@@ -351,14 +352,25 @@ export const object =
   > =>
   (...parents: unknown[]) => {
     const values = parents[0];
-    const introspection = values === INTROSPECT;
+    const introspecting = values === INTROSPECT;
     const ret = asStructure(
       {} as ObjReturnTypes<Validators> & {
         [OBJECT_ROOT]?: string;
       }
     );
-    if (introspection || !isPlainObject(values)) {
+    if (introspecting || !isPlainObject(values)) {
       ret[OBJECT_ROOT] = 'Expected object';
+    } else if (!allowUnknown) {
+      const expectedKeys = Object.keys(validators);
+      const actualKeys = Object.keys(values);
+      const unknownKeys = actualKeys.filter(
+        (key) => !expectedKeys.includes(key)
+      );
+      if (unknownKeys.length) {
+        ret[OBJECT_ROOT] = `Unknown properties ${unknownKeys
+          .map((key) => `"${key}"`)
+          .join(', ')}`;
+      }
     }
     return ownEnumerableEntries(validators).reduce<
       ObjReturnTypes<Validators> & IStructure
@@ -366,8 +378,8 @@ export const object =
       if (typeof validator !== 'function') {
         throw new Error(`Expected validator to be function ${String(key)}`);
       }
-      const value = introspection ? INTROSPECT : ((values || {}) as any)[key];
-      const error = introspection
+      const value = introspecting ? INTROSPECT : ((values || {}) as any)[key];
+      const error = introspecting
         ? // thi doesn't use INTROSPECT so why is it here?
           introspectValidator(validator as Validator)
         : validator(value, ...parents);
