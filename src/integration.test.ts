@@ -18,90 +18,71 @@ import {
   hasError,
   listErrors,
   assert,
-  ValidationError,
-  $object,
-  $and,
-  $length,
-  $or,
-  $nullish,
-  $pattern,
-  $match,
-  $string,
-  $number,
-  $integer,
-  $min,
-  $max,
-  $array,
-  $is,
-  $email,
-  orPeers
+  orPeer,
+  oneOf,
+  err
 } from './ok-computer';
+import { AssertError } from './errors';
 
-describe('Built-in errors', () => {
-  it('works', () => {
-    const validator = object({
-      username: and(string, length(3, 30)),
-      password: or(nullish, pattern(/^[a-zA-Z0-9]{3,30}$/)),
-      repeat_password: match('password'),
-      access_token: and(or(string, number)),
-      birth_year: and(
-        or(nullish, and(integer, min(1900), max(2021))),
-        orPeers('age')
-      ),
-      age: and(or(nullish, number), orPeers('birth_year')),
-      email: email,
-      addresses: array(
-        object({
-          line1: and(string, length(1, 255)),
-          line2: or(is(undefined), and(string, length(1, 255)))
-        })
-      )
-    });
-    const errors1 = validator({
-      password: 'erm',
-      addresses: [{ line2: false }, null]
-    });
-    expect(isError(errors1)).toBe(true);
-    expect(hasError(errors1)).toBe(true);
-    // Maybe just check this in as an 'integration' test?
-    // TODO: Move ValidationError tests to baddie.test.ts
-    expect(() => assert(errors1)).toThrow(
-      new ValidationError(listErrors(errors1))
-    );
-    const err = new ValidationError(listErrors(errors1));
-    expect(err.message).toBe(
-      'Invalid: first of 10 errors: username: (Expected string and expected length between 3 and 30)'
-    );
-    expect(err.errors).toEqual(listErrors(errors1));
-    expect(errors1).toMatchInlineSnapshot(`
+it('works', () => {
+  const validator = object({
+    username: and(string, length(3, 30)),
+    password: or(nullish, pattern(/^[a-zA-Z0-9]{3,30}$/)),
+    repeat_password: match('password'),
+    access_token: and(or(string, number)),
+    birth_year: and(
+      or(nullish, and(integer, min(1900), max(2021))),
+      orPeer('age')
+    ),
+    age: and(or(nullish, number), orPeer('birth_year')),
+    email: email,
+    addresses: array(
+      object({
+        line1: and(string, length(1, 255)),
+        line2: or(is(undefined), and(string, length(1, 255)))
+      })
+    ),
+    country: err(oneOf('US', 'GB'), 'Expected either US or GB')
+  });
+  const errors1 = validator({
+    password: 'erm',
+    addresses: [{ line2: false }, null]
+  });
+  expect(isError(errors1)).toBe(true);
+  expect(hasError(errors1)).toBe(true);
+  expect(() => assert(errors1)).toThrow(new AssertError(listErrors(errors1)));
+  const error = new AssertError(listErrors(errors1));
+  expect(error.message).toBe(
+    'Invalid: first of 11 errors: username: (Expected typeof string and expected length between 3 and 30)'
+  );
+  expect(error.errors).toEqual(listErrors(errors1));
+  expect(errors1).toMatchInlineSnapshot(`
       Object {
-        "access_token": "(Expected string or expected number)",
+        "access_token": "(Expected typeof string or expected typeof number)",
         "addresses": Array [
           Object {
-            "line1": "(Expected string and expected length between 1 and 255)",
-            "line2": "(Expected undefined or (Expected string and expected length between 1 and 255))",
-            Symbol(structure): true,
+            "line1": "(Expected typeof string and expected length between 1 and 255)",
+            "line2": "(Expected undefined or (Expected typeof string and expected length between 1 and 255))",
           },
           Object {
-            "__root": "Expected object",
-            "line1": "(Expected string and expected length between 1 and 255)",
+            "line1": "(Expected typeof string and expected length between 1 and 255)",
             "line2": undefined,
-            Symbol(structure): true,
+            Symbol(ok-computer.object-root): "Expected object",
           },
         ],
-        "age": "(Expected not nullish or peer \\"birth_year\\": Expected not nullish)",
-        "birth_year": "(Expected not nullish or peer \\"age\\": Expected not nullish)",
+        "age": "((Expected nullish or expected typeof number) and (not(\\"Expected nullish\\") or peer \\"birth_year\\" not(\\"Expected nullish\\")))",
+        "birth_year": "((Expected nullish or (Expected integer and expected min 1900 and expected max 2021)) and (not(\\"Expected nullish\\") or peer \\"age\\" not(\\"Expected nullish\\")))",
+        "country": "Expected either US or GB",
         "email": "Expected email",
         "password": undefined,
         "repeat_password": "Expected to match password",
-        "username": "(Expected string and expected length between 3 and 30)",
-        Symbol(structure): true,
+        "username": "(Expected typeof string and expected length between 3 and 30)",
       }
     `);
-    expect(listErrors(errors1)).toMatchInlineSnapshot(`
+  expect(listErrors(errors1)).toMatchInlineSnapshot(`
       Array [
         Object {
-          "err": "(Expected string and expected length between 3 and 30)",
+          "err": "(Expected typeof string and expected length between 3 and 30)",
           "path": "username",
         },
         Object {
@@ -109,15 +90,15 @@ describe('Built-in errors', () => {
           "path": "repeat_password",
         },
         Object {
-          "err": "(Expected string or expected number)",
+          "err": "(Expected typeof string or expected typeof number)",
           "path": "access_token",
         },
         Object {
-          "err": "(Expected not nullish or peer \\"age\\": Expected not nullish)",
+          "err": "((Expected nullish or (Expected integer and expected min 1900 and expected max 2021)) and (not(\\"Expected nullish\\") or peer \\"age\\" not(\\"Expected nullish\\")))",
           "path": "birth_year",
         },
         Object {
-          "err": "(Expected not nullish or peer \\"birth_year\\": Expected not nullish)",
+          "err": "((Expected nullish or expected typeof number) and (not(\\"Expected nullish\\") or peer \\"birth_year\\" not(\\"Expected nullish\\")))",
           "path": "age",
         },
         Object {
@@ -125,243 +106,61 @@ describe('Built-in errors', () => {
           "path": "email",
         },
         Object {
-          "err": "(Expected string and expected length between 1 and 255)",
+          "err": "(Expected typeof string and expected length between 1 and 255)",
           "path": "addresses.0.line1",
         },
         Object {
-          "err": "(Expected undefined or (Expected string and expected length between 1 and 255))",
+          "err": "(Expected undefined or (Expected typeof string and expected length between 1 and 255))",
           "path": "addresses.0.line2",
         },
         Object {
-          "err": "Expected object",
-          "path": "addresses.1.__root",
+          "err": "(Expected typeof string and expected length between 1 and 255)",
+          "path": "addresses.1.line1",
         },
         Object {
-          "err": "(Expected string and expected length between 1 and 255)",
-          "path": "addresses.1.line1",
+          "err": "Expected object",
+          "path": "addresses.1.Symbol(ok-computer.object-root)",
+        },
+        Object {
+          "err": "Expected either US or GB",
+          "path": "country",
         },
       ]
     `);
-    const errors2 = validator({
-      username: 'lh44',
-      password: 'password123',
-      repeat_password: 'password123',
-      access_token: 123,
-      birth_year: 1994,
-      email: 'lh44@mercedes.com',
-      addresses: [
-        {
-          line1: '123 Fake street'
-        }
-      ]
-    });
-    expect(isError(errors2)).toBe(false);
-    expect(hasError(errors2)).toBe(false);
-    expect(() => assert(errors2)).not.toThrow();
-    expect(errors2).toMatchInlineSnapshot(`
+  const errors2 = validator({
+    username: 'lh44',
+    password: 'password123',
+    repeat_password: 'password123',
+    access_token: 123,
+    birth_year: 1994,
+    email: 'lh44@mercedes.com',
+    addresses: [
+      {
+        line1: '123 Fake street'
+      }
+    ],
+    country: 'GB'
+  });
+  expect(isError(errors2)).toBe(false);
+  expect(hasError(errors2)).toBe(false);
+  expect(() => assert(errors2)).not.toThrow();
+  expect(errors2).toMatchInlineSnapshot(`
       Object {
         "access_token": undefined,
         "addresses": Array [
           Object {
             "line1": undefined,
             "line2": undefined,
-            Symbol(structure): true,
           },
         ],
         "age": undefined,
         "birth_year": undefined,
+        "country": undefined,
         "email": undefined,
         "password": undefined,
         "repeat_password": undefined,
         "username": undefined,
-        Symbol(structure): true,
       }
     `);
-    expect(listErrors(errors2)).toEqual([]);
-  });
-});
-
-describe('Custom errors', () => {
-  it('works', () => {
-    interface CustomError {
-      readonly message: string;
-    }
-    const err = (message: string): CustomError => ({ message });
-    const addressValidator = $object({
-      line1: $and($string, $length(1, 255))(err('Invalid line 1')),
-      line2: $or(
-        $is(undefined),
-        $and($string, $length(1, 255))
-      )(err('Invalid line 2'))
-    })(err('Invalid address'));
-    const validator = $object({
-      username: $and($string, $length(3, 30))(err('Invalid username')),
-      password: $or(
-        $nullish,
-        $pattern(/^[a-zA-Z0-9]{3,30}$/)
-      )(err('Invalid password')),
-      repeat_password: $match('password')(err('Invalid repeat_password')),
-      access_token: $or($string, $number)(err('Invalid access_token')),
-      birth_year: $and(
-        $integer,
-        $min(1900),
-        $max(2021)
-      )(err('Invalid birth_year')),
-      email: $email(err('Invalid email')),
-      addresses: $array<ReturnType<typeof addressValidator> | CustomError>(
-        addressValidator
-      )(err('Invalid addresses'))
-    })(err('Invalid object'));
-    const errors1 = validator({
-      password: 'erm',
-      addresses: [{ line2: false }, null]
-    });
-    expect(isError(errors1)).toBe(true);
-    expect(hasError(errors1)).toBe(true);
-    // Maybe just check this in as an 'integration' test?
-    // TODO: Move ValidationError tests to baddie.test.ts
-    expect(() => assert(errors1)).toThrow(
-      new ValidationError(listErrors(errors1))
-    );
-    const validationError = new ValidationError(listErrors(errors1));
-    expect(validationError.message).toBe(
-      'Invalid: first of 9 errors: username: {"message":"Invalid username"}'
-    );
-    expect(validationError.errors).toEqual(listErrors(errors1));
-    expect(errors1).toMatchInlineSnapshot(`
-        Object {
-          "access_token": Object {
-            "message": "Invalid access_token",
-          },
-          "addresses": Array [
-            Object {
-              "line1": Object {
-                "message": "Invalid line 1",
-              },
-              "line2": Object {
-                "message": "Invalid line 2",
-              },
-              Symbol(structure): true,
-            },
-            Object {
-              "__root": Object {
-                "message": "Invalid address",
-              },
-              "line1": Object {
-                "message": "Invalid line 1",
-              },
-              "line2": undefined,
-              Symbol(structure): true,
-            },
-          ],
-          "birth_year": Object {
-            "message": "Invalid birth_year",
-          },
-          "email": Object {
-            "message": "Invalid email",
-          },
-          "password": undefined,
-          "repeat_password": Object {
-            "message": "Invalid repeat_password",
-          },
-          "username": Object {
-            "message": "Invalid username",
-          },
-          Symbol(structure): true,
-        }
-      `);
-    expect(listErrors(errors1)).toMatchInlineSnapshot(`
-        Array [
-          Object {
-            "err": Object {
-              "message": "Invalid username",
-            },
-            "path": "username",
-          },
-          Object {
-            "err": Object {
-              "message": "Invalid repeat_password",
-            },
-            "path": "repeat_password",
-          },
-          Object {
-            "err": Object {
-              "message": "Invalid access_token",
-            },
-            "path": "access_token",
-          },
-          Object {
-            "err": Object {
-              "message": "Invalid birth_year",
-            },
-            "path": "birth_year",
-          },
-          Object {
-            "err": Object {
-              "message": "Invalid email",
-            },
-            "path": "email",
-          },
-          Object {
-            "err": Object {
-              "message": "Invalid line 1",
-            },
-            "path": "addresses.0.line1",
-          },
-          Object {
-            "err": Object {
-              "message": "Invalid line 2",
-            },
-            "path": "addresses.0.line2",
-          },
-          Object {
-            "err": Object {
-              "message": "Invalid address",
-            },
-            "path": "addresses.1.__root",
-          },
-          Object {
-            "err": Object {
-              "message": "Invalid line 1",
-            },
-            "path": "addresses.1.line1",
-          },
-        ]
-      `);
-    const errors2 = validator({
-      username: 'lh44',
-      password: 'password123',
-      repeat_password: 'password123',
-      access_token: 123,
-      birth_year: 1994,
-      email: 'lh44@mercedes.com',
-      addresses: [
-        {
-          line1: '123 Fake street'
-        }
-      ]
-    });
-    expect(isError(errors2)).toBe(false);
-    expect(hasError(errors2)).toBe(false);
-    expect(() => assert(errors2)).not.toThrow();
-    expect(errors2).toMatchInlineSnapshot(`
-        Object {
-          "access_token": undefined,
-          "addresses": Array [
-            Object {
-              "line1": undefined,
-              "line2": undefined,
-              Symbol(structure): true,
-            },
-          ],
-          "birth_year": undefined,
-          "email": undefined,
-          "password": undefined,
-          "repeat_password": undefined,
-          "username": undefined,
-          Symbol(structure): true,
-        }
-      `);
-    expect(listErrors(errors2)).toEqual([]);
-  });
+  expect(listErrors(errors2)).toEqual([]);
 });
