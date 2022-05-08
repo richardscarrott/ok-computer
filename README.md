@@ -66,7 +66,7 @@ hasError(errors);
 // true
 
 assert(errors);
-// throw new AssertError('Invalid: first of 3 errors: firstName: Expected string')
+// throw new AssertError('Invalid: first of 4 errors: firstName: Expected typeof string')
 ```
 
 ## ✨ Concepts
