@@ -63,7 +63,7 @@ assert(errors);
 
 ## ✨ Concepts
 
-Everything in Ok Computer is a validator function, also known as a "validator".
+Everything in Ok Computer is a validation function, also known as a "validator".
 
 ```ts
 type Validator<Err = unknown> = (value: unknown) => Err | undefined;
@@ -71,11 +71,11 @@ type Validator<Err = unknown> = (value: unknown) => Err | undefined;
 
 A validator has 3 rules:
 
-1. Returns `undefined` if the value is _valid_
+1. **Returns `undefined` if the value is _valid_**
 
-2. Returns an error (_anything_ other than `undefined`) if the value is _invalid_
+2. **Returns an error (_anything_ other than `undefined`) if the value is _invalid_**
 
-3. Returns an error if the value is `Symbol.for('ok-computer.introspect')`
+3. **Returns an error if the value is `Symbol.for('ok-computer.introspect')`**
 
 ```ts
 const fortyFour: Validator<string> = (value) =>
@@ -369,7 +369,7 @@ listErrors(error);
 // [{ path: 'firstName', err: 'Expected typeof string' }, { path: 'lastName', err: 'Expected typeof string' }]
 
 assert(error);
-// throw new AssertError(`Invalid: first of 2 errors: firstName: Expected string`)
+// throw new AssertError(`Invalid: first of 2 errors: firstName: Expected typeof string`)
 ```
 
 Sometimes validation depends on sibling values. By convention all validators receive parent values as subsequent arguments.
@@ -397,7 +397,7 @@ Although all out-the-box validators return pre-baked error _strings_, you can ov
 ```ts
 import { err, string } from 'ok-computer';
 
-string(10); // 'Expected string'
+string(10); // 'Expected typeof string'
 
 const str = err(string, 'Really expected a string');
 str(10); // 'Really expected a string'
@@ -407,7 +407,7 @@ str(10); // 'Really expected a string'
 import { err, nullish, string, or } from 'ok-computer';
 
 const firstName = or(nullish, string);
-firstName(10); // ORError(['Expected nullish', 'Expected string'])
+firstName(10); // ORError(['Expected nullish', 'Expected typeof string'])
 
 const forename = err(or(nullish, string), 'Expected nullish or string');
 forename(10); // 'Expected nullish or string'
