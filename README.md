@@ -28,7 +28,7 @@ npm install ok-computer
 
 ## Example
 
-[Try in CodeSandbox](https://codesandbox.io/s/ok-computer-7h38q?file=/src/index.ts)
+[Try on CodeSandbox](https://codesandbox.io/s/ok-computer-forked-yghenq?file=/src/index.ts)
 
 ```js
 import {
@@ -53,6 +53,14 @@ const validator = object({
 });
 
 const errors = validator({ lastName: 44, picture: {} });
+// {
+//   firstName: 'Expected typeof string',
+//   lastName: '(Expected nullish or expected typeof string)',
+//   picture: {
+//     url: '(Expected typeof string and expected length between 1 and 255)',
+//     width: 'Expected integer'
+//   }
+// };
 
 hasError(errors);
 // true
@@ -462,5 +470,5 @@ JSON.stringify(err);
 
 Coming soon... for now you can:
 
-1.  [Discover the full API using TypeScript](https://codesandbox.io/s/ok-computer-7h38q?file=/src/index.ts) (TIP: `import * as ok from 'ok-computer'`)
+1.  [Discover the full API using TypeScript](https://codesandbox.io/s/ok-computer-forked-yghenq?file=/src/index.ts) (TIP: `import * as ok from 'ok-computer'`)
 2.  [Browse the source](https://github.com/richardscarrott/ok-computer/blob/master/src/ok-computer.ts) (there isn't much code)
