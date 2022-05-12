@@ -14,7 +14,7 @@
 
 ☕ Zero dependencies (it's < 500 lines of code including types).
 
-😂 [5+ years in the making](https://gist.github.com/richardscarrott/7b4abfda67b54d70514e)
+📦 Available on [npm](https://www.npmjs.com/package/ok-computer) and [deno.land](https://deno.land/x/ok_computer).
 
 ![Alt Text](ok-computer-demo.gif)
 
@@ -22,9 +22,25 @@
 
 ## Install
 
+### npm
+
 ```
 npm install ok-computer
 ```
+
+### Yarn
+
+```
+yarn install ok-computer
+```
+
+### Deno
+
+```
+
+```
+
+### Deno
 
 ## Example
 
