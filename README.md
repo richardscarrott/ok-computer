@@ -31,7 +31,7 @@ npm install ok-computer
 ### Yarn
 
 ```
-yarn install ok-computer
+yarn add ok-computer
 ```
 
 ### Deno

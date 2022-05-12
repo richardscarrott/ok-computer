@@ -43,5 +43,12 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "denoify": {
+    "includes": [
+      "README.md",
+      "LICENSE",
+      "ok-computer-demo.gif"
+    ]
+  }
 }
