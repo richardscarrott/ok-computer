@@ -2,7 +2,7 @@
 
 [![GitHub package.json version](https://img.shields.io/github/package-json/v/richardscarrott/ok-computer.svg)](https://www.npmjs.com/package/ok-computer)
 [![GitHub license](https://github.com/richardscarrott/ok-computer/actions/workflows/node.js.yml/badge.svg)](https://github.com/richardscarrott/ok-computer/actions/workflows/node.js.yml)
-[![GitHub license](https://img.shields.io/github/license/richardscarrott/ok-computer.svg)](https://github.com/richardscarrott/ok-computer/blob/master/LICENSE)
+[![GitHub license](https://img.shields.io/github/license/richardscarrott/ok-computer.svg)](https://github.com/richardscarrott/ok-computer/blob/master/LICENSE) [![deno land](http://img.shields.io/badge/available%20on-deno.land/x-lightgrey.svg?logo=deno&labelColor=black)](https://deno.land/x/ok_computer)
 
 λ "Functions all the way down" **data validation for JavaScript and TypeScript**.
 
@@ -37,7 +37,7 @@ yarn install ok-computer
 ### Deno
 
 ```
-
+import * as ok from "https://deno.land/x/ok_computer/ok-computer.ts";
 ```
 
 ### Deno

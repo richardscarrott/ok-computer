@@ -36,7 +36,7 @@
     "typescript": "^4.2.4"
   },
   "scripts": {
-    "build": "rm -rf dist & rollup -c && rm -rf deno_dist && denoify",
+    "build": "rm -rf dist & rollup -c && rm -rf deno_dist && denoify && rm deno_dist/**.test.ts",
     "dev": "rm -rf dist & rollup -c -w",
     "test": "jest",
     "prepublish": "npm run test & npm run build"
