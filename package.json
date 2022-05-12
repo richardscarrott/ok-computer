@@ -26,6 +26,7 @@
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@types/jest": "^27.4.1",
+    "denoify": "^0.11.0",
     "jest": "^27.5.1",
     "prettier": "^2.3.0",
     "rollup": "^2.48.0",
@@ -35,7 +36,7 @@
     "typescript": "^4.2.4"
   },
   "scripts": {
-    "build": "rm -rf dist & rollup -c",
+    "build": "rm -rf dist & rollup -c && rm -rf deno_dist && denoify",
     "dev": "rm -rf dist & rollup -c -w",
     "test": "jest",
     "prepublish": "npm run test & npm run build"

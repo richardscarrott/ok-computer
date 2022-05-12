@@ -9,5 +9,5 @@
     "declarationDir": "dist",
     "outDir": "dist"
   },
-  "exclude": ["src/**/*.test.ts"]
+  "exclude": ["src/**/*.test.ts", "dist", "deno_dist"]
 }
