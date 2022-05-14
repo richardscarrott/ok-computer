@@ -16,7 +16,7 @@ import {
   nul,
   integer,
   finite,
-  anyArray,
+  arr,
   or,
   xor,
   and,
@@ -454,17 +454,17 @@ describe('finite', () => {
   });
 });
 
-describe('anyArray', () => {
+describe('arr', () => {
   it('checks whether value is an array', () => {
     const err = 'Expected array';
-    expect(anyArray([])).toBe(undefined);
-    expect(anyArray([true, 'A string', 0, false, {}])).toBe(undefined);
-    expect(anyArray({})).toBe(err);
-    expect(anyArray({ length: 10 })).toBe(err);
-    expect(anyArray('A string')).toBe(err);
-    expect(anyArray(123)).toBe(err);
-    expect(anyArray(undefined)).toBe(err);
-    expect(anyArray(null)).toBe(err);
+    expect(arr([])).toBe(undefined);
+    expect(arr([true, 'A string', 0, false, {}])).toBe(undefined);
+    expect(arr({})).toBe(err);
+    expect(arr({ length: 10 })).toBe(err);
+    expect(arr('A string')).toBe(err);
+    expect(arr(123)).toBe(err);
+    expect(arr(undefined)).toBe(err);
+    expect(arr(null)).toBe(err);
   });
 });
 

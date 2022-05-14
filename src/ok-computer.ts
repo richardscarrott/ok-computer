@@ -174,17 +174,17 @@ export const and = <T extends Validator<any>[]>(
   );
 };
 
-// I suspect `array(string)` is going to be more commonly used as
-// most of the time you care what is in the array... but this is basically
-// a patch on the fact `instanceOf(Array)` isn't reliable.
-// It could in theory be written as `$array(create(() => true))` but that'd
-// return `withStructure([])` err which probably isn't expected.
-export const anyArray = create(Array.isArray, 'Expected array');
+// I suspect `array(string)` is going to be more commonly used as most of
+// the time you care what is in the array... but this is basically a patch
+// on the fact `instanceOf(Array)` isn't reliable.
+// It could in theory be written as `array(create(() => true))` but that'd
+// return `asStructure(['Expected array'])` err which probably isn't ideal.
+export const arr = create(Array.isArray, 'Expected array');
 
 export const maxLength = (len: number) =>
   err(
     and(
-      or(string, anyArray),
+      or(string, arr),
       create((value) => (value as any[] | string).length <= len)
     ),
     `Expected max length ${len}`
@@ -193,7 +193,7 @@ export const maxLength = (len: number) =>
 export const minLength = (len: number) =>
   err(
     and(
-      or(string, anyArray),
+      or(string, arr),
       create((value) => (value as any[] | string).length >= len)
     ),
     `Expected min length ${len}`
@@ -233,7 +233,7 @@ export const nullish = err(
 export const includes = (value: any) =>
   err(
     and(
-      or(anyArray, string),
+      or(arr, string),
       create((actual) => (actual as string | any[]).includes(value))
     ),
     `Expected to include ${value}`

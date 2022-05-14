@@ -40,8 +40,6 @@ yarn add ok-computer
 import * as ok from "https://deno.land/x/ok_computer/ok-computer.ts";
 ```
 
-### Deno
-
 ## Example
 
 [Try on CodeSandbox](https://codesandbox.io/s/ok-computer-forked-yghenq?file=/src/index.ts)
@@ -78,11 +76,9 @@ const errors = validator({ lastName: 44, picture: {} });
 //   }
 // };
 
-hasError(errors);
-// true
+hasError(errors); // true
 
-assert(errors);
-// throw new AssertError('Invalid: first of 4 errors: firstName: Expected typeof string')
+assert(errors); // throw new AssertError('Invalid: first of 4 errors: firstName: Expected typeof string')
 ```
 
 ## ✨ Concepts
@@ -105,14 +101,9 @@ A validator has 3 rules:
 const fortyFour: Validator<string> = (value) =>
   value !== 44 ? 'Expected the number 44' : undefined;
 
-fortyFour(44);
-// undefined
-
-fortyFour(43);
-// 'Expected the number 44'
-
-fortyFour(Symbol.for('ok-computer.introspect'));
-// 'Expected the number 44'
+fortyFour(44); // undefined
+fortyFour(43); // 'Expected the number 44'
+fortyFour(Symbol.for('ok-computer.introspect')); // 'Expected the number 44'
 ```
 
 All built-in validators work like this, for example this is how `string` is implemented.
@@ -121,14 +112,9 @@ All built-in validators work like this, for example this is how `string` is impl
 const string: Validator<string> = (value) =>
   typeof value !== 'string' ? 'Expected string' : undefined;
 
-string('cat');
-// undefined
-
-string(10);
-// 'Expected string'
-
-string(Symbol.for('ok-computer.introspect'));
-// 'Expected string'
+string('cat'); // undefined
+string(10); // 'Expected string'
+string(Symbol.for('ok-computer.introspect')); // 'Expected string'
 ```
 
 The above validators implicitly handle rule 3 due to the nature of the validation logic. In some cases you need to explicitly handle it.
@@ -138,14 +124,9 @@ The above validators implicitly handle rule 3 due to the nature of the validatio
 const symbol: Validator<string> = (value) =>
   typeof value !== 'symbol' ? 'Expected symbol' : undefined;
 
-symbol(Symbol.for('cat'));
-// undefined ✅
-
-symbol('cat');
-// 'Expected symbol' ✅
-
-symbol(Symbol.for('ok-computer.introspect'));
-// undefined ❌
+symbol(Symbol.for('cat')); // undefined ✅
+symbol('cat'); // 'Expected symbol' ✅
+symbol(Symbol.for('ok-computer.introspect')); // undefined ❌
 ```
 
 ```ts
@@ -155,14 +136,9 @@ const symbol: Validator<string> = (value) =>
     ? 'Expected symbol'
     : undefined;
 
-symbol(Symbol.for('cat'));
-// undefined ✅
-
-symbol('cat');
-// 'Expected symbol' ✅
-
-symbol(Symbol.for('ok-computer.introspect'));
-// 'Expected symbol' ✅
+symbol(Symbol.for('cat')); // undefined ✅
+symbol('cat'); // 'Expected symbol' ✅
+symbol(Symbol.for('ok-computer.introspect')); // 'Expected symbol' ✅
 ```
 
 ```ts
@@ -171,19 +147,14 @@ import { create } from 'ok-computer';
 
 const symbol = create((value) => typeof value === 'symbol', 'Expected symbol');
 
-symbol(Symbol.for('cat'));
-// undefined ✅
-
-symbol('cat');
-// 'Expected symbol' ✅
-
-symbol(Symbol.for('ok-computer.introspect'));
-// 'Expected symbol' ✅
+symbol(Symbol.for('cat')); // undefined ✅
+symbol('cat'); // 'Expected symbol' ✅
+symbol(Symbol.for('ok-computer.introspect')); // 'Expected symbol' ✅
 ```
 
 > NOTE: It's recommended to use `create` for all custom validators.
 
-Errors don't have to be string values, as per rule 2 **an error can be _anything_ other than `undefined`**. So yes, this means `''`, `0`, `null` and `false` or even `() => {}` are all considered to be an error.
+Errors don't have to be string values, as per rule 2 **an error can be _anything_ other than `undefined`**. So yes, this means `''`, `0`, `null` and `false` are all considered to be an error.
 
 ```ts
 import { create } from 'ok-computer';
@@ -192,39 +163,21 @@ const string = create(
   (value) => typeof value === 'string',
   new Error('Expected string')
 );
-
-string('cat');
-// undefined
-
-string(44);
-// new Error('Expected string')
+string('cat'); // undefined
+string(44); // new Error('Expected string')
 
 const number = create((value) => typeof value === 'number', false);
-
-number(44);
-// undefined
-
-number('cat');
-// false
+number(44); // undefined
+number('cat'); // false
 
 const never = create((value) => false, 0);
-
-never('cat');
-// 0
-
-never(44);
-// 0
+never('cat'); // 0
+never(44); // 0
 
 const always = create((value) => true, { id: 'foo.bar' });
-
-always('cat');
-// undefined
-
-always(44);
-// undefined
-
-always(Symbol.for('ok-computer.introspect'));
-// { id: 'foo.bar' }
+always('cat'); // undefined
+always(44); // undefined
+always(Symbol.for('ok-computer.introspect')); // { id: 'foo.bar' }
 ```
 
 So far so good, however nothing particularly useful is going on as you don't need a library to write a function which conditionally returns undefined.
@@ -236,17 +189,10 @@ import { length } from 'ok-computer';
 
 const length3 = length(3);
 
-length3('cat');
-// undefined
-
-length3([1, 2, 3]);
-// undefined
-
-length3('catamaran');
-// 'Expected length 3'
-
-length3([1, 2]);
-// 'Expected length 3'
+length3('cat'); // undefined
+length3([1, 2, 3]); // undefined
+length3('catamaran'); // 'Expected length 3'
+length3([1, 2]); // 'Expected length 3'
 ```
 
 ```ts
@@ -254,14 +200,9 @@ import { length, string, and } from 'ok-computer';
 
 const name = and(string, length(3));
 
-name('cat');
-// undefined
-
-name([1, 2, 3]);
-// (Expected typeof string and expected length 3)
-
-name('catamaran');
-// (Expected typeof string and expected length 3)
+name('cat'); // undefined
+name([1, 2, 3]); // (Expected typeof string and expected length 3)
+name('catamaran'); // (Expected typeof string and expected length 3)
 ```
 
 ```ts
@@ -286,17 +227,10 @@ const username = or(
   )
 );
 
-username('catamaran');
-// undefined
-
-username(null);
-// undefined
-
-username('cat');
-// (Expected nullish or (Expected typeof string and expected length between 4 and 30 and expected to match pattern /^[\\w\\.]*$/ and not("Expected one of lewis.hamilton, kanye.west")))
-
-username('lewis.hamilton');
-// (Expected nullish or (Expected typeof string and expected length between 4 and 30 and expected to match pattern /^[\\w\\.]*$/ and not("Expected one of lewis.hamilton, kanye.west")))
+username('catamaran'); // undefined
+username(null); // undefined
+username('cat'); // (Expected nullish or (Expected typeof string and expected length between 4 and 30 and expected to match pattern /^[\\w\\.]*$/ and not("Expected one of lewis.hamilton, kanye.west")))
+username('lewis.hamilton'); // (Expected nullish or (Expected typeof string and expected length between 4 and 30 and expected to match pattern /^[\\w\\.]*$/ and not("Expected one of lewis.hamilton, kanye.west")))
 ```
 
 You can implement your own higher order validators in the same way.
@@ -312,11 +246,8 @@ const endsWith = (suffix: string) =>
 
 const jpeg = endsWith('.jpeg');
 
-jpeg('cat.jpeg');
-// undefined
-
-jpeg('cat.png');
-// 'Expected string to end with ".jpeg"'
+jpeg('cat.jpeg'); // undefined
+jpeg('cat.png'); // 'Expected string to end with ".jpeg"'
 ```
 
 Some commonly used higher order validators return structural data which, like `undefined`, can also be considered valid.
@@ -328,11 +259,8 @@ const user = object({
   name: string
 });
 
-user({ name: 'Hamilton' });
-// { name: undefined, [Symbol('ok-computer.structure')]: true }
-
-user({ name: 44 });
-// { name: 'Expected typeof string', [Symbol('ok-computer.structure')]: true }
+user({ name: 'Hamilton' }); // { name: undefined, [Symbol('ok-computer.structure')]: true }
+user({ name: 44 }); // { name: 'Expected typeof string', [Symbol('ok-computer.structure')]: true }
 ```
 
 ```ts
@@ -340,11 +268,8 @@ import { array, string } from 'ok-computer';
 
 const names = array(string);
 
-names(['Hamilton']);
-// Array { 0: undefined, [Symbol('ok-computer.structure')]: true }
-
-names(['Hamilton', 44]);
-// Array { 0: undefined, 1: 'Expected typeof string', [Symbol('ok-computer.structure')]: true }
+names(['Hamilton']); // Array { 0: undefined, [Symbol('ok-computer.structure')]: true }
+names(['Hamilton', 44]); // Array { 0: undefined, 1: 'Expected typeof string', [Symbol('ok-computer.structure')]: true }
 ```
 
 This exposes a richer interface to consume more complex validation errors. The tradeoff being you can't simply check if the error is `undefined` to determine if it's valid. Instead you must use a dedicated `isError` function.
@@ -356,11 +281,8 @@ const user = object({
   name: string
 });
 
-const error = user({ name: 'Hamilton' });
-// { name: undefined, [Symbol('ok-computer.structure')]: true }
-
-isError(error);
-// false
+const error = user({ name: 'Hamilton' }); // { name: undefined, [Symbol('ok-computer.structure')]: true }
+isError(error); // false
 ```
 
 There are a number of other functions to help consume errors.
@@ -380,20 +302,15 @@ const user = object({
   lastName: string
 });
 
-const error = user({ firstName: 44 });
-// { firstName: 'Expected typeof string', lastName: 'Expected typeof string', [Symbol('ok-computer.structure')]: true }
+const error = user({ firstName: 44 }); // { firstName: 'Expected typeof string', lastName: 'Expected typeof string', [Symbol('ok-computer.structure')]: true }
 
-isError(error);
-// true
+isError(error); // true
 
-hasError(error); // (alias for `isError`)
-// true
+hasError(error); // true (alias for `isError`)
 
-listErrors(error);
-// [{ path: 'firstName', err: 'Expected typeof string' }, { path: 'lastName', err: 'Expected typeof string' }]
+listErrors(error); // [{ path: 'firstName', err: 'Expected typeof string' }, { path: 'lastName', err: 'Expected typeof string' }]
 
-assert(error);
-// throw new AssertError(`Invalid: first of 2 errors: firstName: Expected typeof string`)
+assert(error); // throw new AssertError(`Invalid: first of 2 errors: firstName: Expected typeof string`)
 ```
 
 Sometimes validation depends on sibling values. By convention all validators receive parent values as subsequent arguments.
@@ -446,22 +363,18 @@ Many errors returned from higher order validators such as `ORError`, `ANDError`,
 import { nullish, string, or } from 'ok-computer';
 
 const firstName = or(nullish, string);
-const err = firstName(44);
-// ORError(['Expected nullish', 'Expected typeof string'])
 
-JSON.stringify(err);
-// '(Expected nullish or expected typeof string)'
+const err = firstName(44); // ORError(['Expected nullish', 'Expected typeof string'])
+JSON.stringify(err); // '(Expected nullish or expected typeof string)'
 ```
 
 ```ts
 import { nullish, string, or, and, minLength } from 'ok-computer';
 
 const firstName = or(nullish, and(string, minLength(1)));
-const err = firstName(44);
-// ORError(['Expected nullish', ANDError(['Expected typeof string', 'Expected min length 1'])])
+const err = firstName(44); // ORError(['Expected nullish', ANDError(['Expected typeof string', 'Expected min length 1'])])
 
-JSON.stringify(err);
-// '(Expected nullish or (Expected typeof string and expected min length 1))'
+JSON.stringify(err); // '(Expected nullish or (Expected typeof string and expected min length 1))'
 ```
 
 ```ts
@@ -478,8 +391,8 @@ const err = firstName(44);
 //   }
 // ])
 
-JSON.stringify(err);
-// { type: 'ORError', operator: 'OR', errors: ['Expected nullish', { name: 'Expected typeof string' }] }
+// NOTE: Cannot be serialized into string
+JSON.stringify(err); // { type: 'ORError', operator: 'OR', errors: ['Expected nullish', { name: 'Expected typeof string' }] }
 ```
 
 ## API
