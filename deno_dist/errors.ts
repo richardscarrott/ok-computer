@@ -6,13 +6,8 @@ interface IError<T = unknown> {
   readonly toPrimitiveError: () => T;
 }
 
-export const isIError = (val: any): val is IError => {
-  try {
-    return typeof val.toPrimitiveError === 'function';
-  } catch (ex) {
-    return false;
-  }
-};
+export const isIError = (val: any): val is IError =>
+  val != null && typeof val.toPrimitiveError === 'function';
 
 const STRUCTURE = Symbol('ok-computer.structure');
 
@@ -20,13 +15,8 @@ export interface IStructure {
   readonly [STRUCTURE]: true;
 }
 
-export const isIStructure = (val: any): val is IStructure => {
-  try {
-    return val[STRUCTURE] === true;
-  } catch (ex) {
-    return false;
-  }
-};
+export const isIStructure = (val: any): val is IStructure =>
+  val != null && val[STRUCTURE] === true;
 
 export const asStructure = <T>(val: T): T & IStructure => {
   if (val == null) {
