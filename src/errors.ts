@@ -9,7 +9,7 @@ interface IError<T = unknown> {
 export const isIError = (val: any): val is IError =>
   val != null && typeof val.toPrimitiveError === 'function';
 
-const STRUCTURE = Symbol('ok-computer.structure');
+const STRUCTURE = Symbol.for('ok-computer.structure');
 
 export interface IStructure {
   readonly [STRUCTURE]: true;
