@@ -336,6 +336,12 @@ type ObjReturnTypes<T extends Record<keyof T, (...a: any[]) => any>> = {
 
 export const OBJECT_ROOT = Symbol.for('ok-computer.object-root');
 
+export type ObjectErrorStruct<
+  Validators extends Record<any, (...a: any[]) => any>
+> = ObjReturnTypes<Validators> & {
+  [OBJECT_ROOT]?: string;
+} & IStructure;
+
 export const object =
   <
     Validators extends Record<
@@ -345,11 +351,7 @@ export const object =
   >(
     validators: Validators,
     { allowUnknown = false }: { allowUnknown?: boolean } = {}
-  ): StructValidator<
-    ObjReturnTypes<Validators> & {
-      [OBJECT_ROOT]?: string;
-    } & IStructure
-  > =>
+  ): StructValidator<ObjectErrorStruct<Validators>> =>
   (...parents: unknown[]) => {
     const values = parents[0];
     const introspecting = values === INTROSPECT;
