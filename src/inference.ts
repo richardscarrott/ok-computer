@@ -11,10 +11,27 @@ type SelectivePartial<T, K extends keyof T> = Partial<Pick<T, K>> &
   ? { [P in keyof U]: U[P] }
   : never;
 
+// `__typeMeta` is a compile-time only property used to `Infer` the valid type definition.
+// It's optional so that a) the type accurately describes runtime validators which don't have
+// a property called `__typeMeta` and b) so we can infer `undefined` vs optional types
+// https://stackoverflow.com/questions/72402413/is-it-possible-to-make-a-property-required-yet-preserve-undefined
+type ValidatorTypeMeta<ValidType> = { __typeMeta?: { validType: ValidType } };
+
 export type Validator<Err = unknown, ValidType = unknown> = ((
   value: unknown,
   ...parents: any[]
-) => Err | undefined) & { __type: ValidType };
+) => Err | undefined) &
+  ValidatorTypeMeta<ValidType>;
+
+type V = Validator<any, null | undefined>;
+type Nested = Required<V>['__typeMeta']['validType'];
+
+// I think this could possibly work; just need to figure out why I can't access 'validType'
+// prob just need to pick or somehow coerce it into a required type.
+type Infer<V extends Validator<any, any>> = Exclude<
+  V['__typeMeta'],
+  undefined
+>['validType'];
 
 const STRUCTURE = Symbol.for('ok-computer.structure');
 
@@ -22,11 +39,11 @@ export interface IStructure {
   readonly [STRUCTURE]: true;
 }
 
-// why is Err and Type the opposite way around from Validator 🙄
 export type StructValidator<Err extends IStructure, ValidType = unknown> = ((
   value: unknown,
   ...parents: any[]
-) => Err) & { __type: ValidType };
+) => Err) &
+  ValidatorTypeMeta<ValidType>;
 
 type ObjReturnTypes<T extends Record<keyof T, (...a: any[]) => any>> = {
   [P in keyof T]: ReturnType<T[P]>;
@@ -64,7 +81,35 @@ const is = <T>(val: any) =>
   create<T>((value) => value === val)(`Expected ${String(val)}`);
 const nul = is<null>(null);
 
-type Infer<V extends Validator<any, any>> = V['__type'];
+type RequiredKeepUndefined<T> = { [K in keyof T]-?: [T[K]] } extends infer U
+  ? U extends Record<keyof U, [any]>
+    ? { [K in keyof U]: U[K][0] }
+    : never
+  : never;
+
+interface Props {
+  firstName?: string | undefined;
+  lastName?: string;
+}
+
+type RequiredProps = RequiredKeepUndefined<Props>;
+
+type Undef = Validator<string, undefined>;
+type InferUndef = Infer<Undef>;
+
+type Nul = Validator<string, null>;
+type InferNul = Infer<Nul>;
+
+type Num = Validator<string, number>;
+type InferNum = Infer<Num>;
+
+type NumOrStr = Validator<string, number | string>;
+type InferNumOrStr = Infer<NumOrStr>;
+
+type NumOrUndef = Validator<string, number | undefined>;
+type InferNumOrUndef = Infer<NumOrUndef>;
+
+type NullablyRequired<T> = { [P in keyof T & keyof any]: T[P] };
 
 // Or InferRecord?
 type _InferObject<T extends Record<any, (val: any, ...parents: any[]) => any>> =
@@ -156,10 +201,10 @@ e5.weight?.charAt;
 // - [ ] `and(string, number)` -> string (pick the first?)
 // - [x] `object({ id: string, age: number, name: or(undef, string) })` -> { id: string; age: number; name?: undefined | string }
 
-// The lame thing about the Validator<T> & { __type: T } interface is you can no longer just define a fn; womp?
+// The lame thing about the Validator<T> & { __typeMeta: T } interface is you can no longer just define a fn; womp?
 
 // 1. Infer<typeof validator> can be done, however
-//    - I'm not sure it'll be possible to make the `& { __type?: T }` interface optional and still infer whether
+//    - I'm not sure it'll be possible to make the `& { __typeMeta?: T }` interface optional and still infer whether
 //      `T` has undefined in the union, i.e. `undefined | string`.
 //      - This would mean you can no longer just write a function; or at least you'd have to cast it.
 //    - The lack of partial generic inference make it harder to pass in the valid type and infer errors at the same time,
@@ -194,3 +239,5 @@ e5.weight?.charAt;
 // }
 // No I don't think so
 // Maybe at least we could have another fn `interface` or `type` which is curried and supports this out the box?
+
+// https://github.com/microsoft/TypeScript/pull/43947
