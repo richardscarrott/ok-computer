@@ -54,10 +54,11 @@ import {
   length,
   integer,
   hasError,
-  assert
+  assert,
+  Infer
 } from 'ok-computer';
 
-const validator = object({
+const user = object({
   firstName: string,
   lastName: or(nullish, string),
   picture: object({
@@ -66,7 +67,9 @@ const validator = object({
   })
 });
 
-const errors = validator({ lastName: 44, picture: {} });
+type User = Infer<typeof user>;
+
+const errors = user({ lastName: 44, picture: {} });
 // {
 //   firstName: 'Expected typeof string',
 //   lastName: '(Expected nullish or expected typeof string)',
@@ -393,6 +396,40 @@ const err = firstName(44);
 
 // NOTE: Cannot be serialized into string
 JSON.stringify(err); // { type: 'ORError', operator: 'OR', errors: ['Expected nullish', { name: 'Expected typeof string' }] }
+```
+
+### Valid Type Inference
+
+#### Validator-first
+
+```
+import {} from 'ok-computer';
+
+const user = object({
+  id: string,
+  name: or(undef, string),
+  age: number
+});
+
+type User = Infer<typeof user>;
+```
+
+#### Type-first
+
+```
+interface User {
+  readonly id: string;
+  readonly name?: string;
+  readonly age: number;
+}
+
+const _user = object({
+  id: string,
+  name: or(undef, string),
+  age: number
+});
+
+const user: Validator<User, ExtractErr<typeof _user>> = _user;
 ```
 
 ## API
