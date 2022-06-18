@@ -10,17 +10,55 @@ import {
   asStructure,
   IStructure
 } from './errors';
-import { isPlainObject, ownEnumerableEntries } from './utils';
+import {
+  isPlainObject,
+  ownEnumerableEntries,
+  SelectivePartial,
+  UndefinedProps
+} from './utils';
 
-export type Validator<Err = unknown> = (
+export type Validator<ValidType = unknown, Err = unknown> = ((
   value: unknown,
   ...parents: any[]
-) => Err | undefined;
+) => Err | undefined) &
+  ValidatorTypeMeta<ValidType>;
 
-export type StructValidator<Err extends IStructure> = (
-  value: unknown,
-  ...parents: any[]
-) => Err;
+export type StructValidator<
+  ValidType = unknown,
+  Err extends IStructure = any
+> = ((value: unknown, ...parents: any[]) => Err) & ValidatorTypeMeta<ValidType>;
+
+type ExtractErr<V extends Validator<any, any>> = Exclude<
+  ReturnType<V>,
+  undefined
+>;
+
+// `__typeMeta` is a compile-time only property used to `Infer` the valid type definition.
+// It's optional so that the type accurately describes runtime validators which won't have
+// a property called `__typeMeta` and it's nested so we can infer `undefined` correctly.
+// https://stackoverflow.com/questions/72402413/is-it-possible-to-make-a-property-required-yet-preserve-undefined
+export type ValidatorTypeMeta<ValidType> = {
+  readonly __typeMeta?: { readonly validType: ValidType };
+};
+
+// Infer<Validator<Error, string>> // string
+// Infer<Validator<Error, string | undefined>> // string | undefined
+export type Infer<V extends Validator<any, any>> = Exclude<
+  V['__typeMeta'],
+  undefined
+>['validType'];
+
+// Changes the valid type meta e.g.
+// const validator: Validator<unknown, Error> = (value) => new Error('Invalid');
+// const annotatedValidator = annotate<number>()(validator); // Validator<number, Error>
+// type ValidType = Infer<typeof annotatedValidator>; // number
+// https://medium.com/@nandin-borjigin/partial-type-argument-inference-in-typescript-and-workarounds-for-it-d7c772788b2e
+export const annotate =
+  <ValidType>() =>
+  <V extends Validator<any, any>>(
+    validator: V
+  ): Validator<ValidType, ExtractErr<ReturnType<V>>> =>
+    validator;
 
 export interface ErrItem<Err> {
   readonly path: string;
@@ -55,6 +93,9 @@ export const isError = <Err>(err: Err): err is Exclude<Err, undefined> =>
   !!listErrors(err).length;
 export const hasError = isError;
 
+// TODO: assert type guard. Signature would have to change to
+// `assert(validator, values)`
+// Which does open the door to optionally logging the values too (desirable in some cases)
 export const assert = <Err>(err: Err) => {
   const errors = listErrors(err);
   if (errors.length) {
@@ -63,25 +104,23 @@ export const assert = <Err>(err: Err) => {
 };
 
 export const withErr =
-  <Err>(validator: Validator<any>, err: Err): Validator<Err> =>
+  <Err, V extends Validator<any, any>>(
+    validator: V,
+    err: Err
+  ): Validator<Infer<V>, Err> =>
   (value: unknown, ...parents: any[]) =>
     isError(validator(value, ...parents)) ? err : undefined;
 export const err = withErr;
 
 export const INTROSPECT = Symbol.for('ok-computer.introspect');
 
-type Predicate = (value: unknown, ...parents: any[]) => boolean;
-
-interface Create {
-  <Err>(predicate: Predicate, err: Err): Validator<Err>;
-  (predicate: Predicate): Validator<string>;
-}
-export const create: Create =
-  (predicate: Predicate, err: any = 'Invalid') =>
-  (value: unknown, ...parents: any[]) =>
+export const create =
+  <ValidType>(predicate: (value: unknown, ...parents: any[]) => boolean) =>
+  <Err>(err: Err): Validator<ValidType, Err> =>
+  (value, ...parents) =>
     value === INTROSPECT || !predicate(value, ...parents) ? err : undefined;
 
-const introspectValidator = <Err>(validator: Validator<Err>) => {
+const introspectValidator = <Err>(validator: Validator<unknown, Err>) => {
   const error = validator(INTROSPECT);
   if (!isError(error)) {
     throw new Error('Validator introspection failed');
@@ -89,60 +128,66 @@ const introspectValidator = <Err>(validator: Validator<Err>) => {
   return error;
 };
 
-export const is = (value: any) =>
-  create((actual) => actual === value, `Expected ${String(value)}`);
+export const is = <ValidType>(value: any) =>
+  create<ValidType>((actual) => actual === value)(`Expected ${String(value)}`);
 
-export const typeOf = (str: string) =>
-  create((value) => typeof value === str, `Expected typeof ${str}`);
+export const typeOf = <ValidType>(str: string) =>
+  create<ValidType>((value) => typeof value === str)(`Expected typeof ${str}`);
 
-export const instanceOf = (ctor: Function) =>
-  create((value) => value instanceof ctor, `Expected instanceof ${ctor.name}`);
+export const instanceOf = <T extends Function>(ctor: T) =>
+  create<T>((value) => value instanceof ctor)(
+    `Expected instanceof ${ctor.name}`
+  );
 
-export const number = typeOf('number');
+export const number = typeOf<number>('number');
 
-export const boolean = typeOf('boolean');
+export const boolean = typeOf<boolean>('boolean');
 
-export const bigint = typeOf('bigint');
+export const bigint = typeOf<bigint>('bigint');
 
-export const string = typeOf('string');
+export const string = typeOf<string>('string');
 
-export const symbol = typeOf('symbol');
+export const symbol = typeOf<symbol>('symbol');
 
-export const fn = typeOf('function');
+export const fn = typeOf<Function>('function');
 
-export const undef = typeOf('undefined');
+export const undef = typeOf<undefined>('undefined');
 
-export const nul = is(null);
+export const nul = is<null>(null);
 
-export const integer = create(Number.isInteger, 'Expected integer');
+export const integer = create<number>(Number.isInteger)('Expected integer');
 
-export const finite = create(Number.isFinite, 'Expected finite number');
+export const finite = create<number>(Number.isFinite)('Expected finite number');
 
 type ArrReturnTypes<T extends ((...args: any) => any)[]> = {
   [I in keyof T]: ReturnType<T[I] extends (...args: any) => any ? T[I] : never>;
 };
 
-export const or = <T extends Validator<any>[]>(
-  ...validators: T
-): Validator<ORError<Exclude<ArrReturnTypes<T>[number], undefined>[]>> => {
+export const or = <V extends Validator<any, any>[]>(
+  ...validators: V
+): Validator<
+  Infer<V[number]>,
+  ORError<Exclude<ArrReturnTypes<V>[number], undefined>[]>
+> => {
   const error = new ORError(
     validators.map((validator) =>
-      introspectValidator<ArrReturnTypes<T>[number]>(validator)
+      introspectValidator<ArrReturnTypes<V>[number]>(validator)
     )
   );
-  return create(
-    (value, ...parents) =>
-      validators.some((validator) => !isError(validator(value, ...parents))),
-    error
-  );
+  return create((value, ...parents) =>
+    validators.some((validator) => !isError(validator(value, ...parents)))
+  )(error);
 };
 
-export const xor = <T extends Validator<any>[]>(
-  ...validators: T
-): Validator<ORError<Exclude<ArrReturnTypes<T>[number], undefined>[]>> => {
+export const xor = <V extends Validator<any, any>[]>(
+  ...validators: V
+): Validator<
+  Infer<V[number]>,
+  XORError<Exclude<ArrReturnTypes<V>[number], undefined>[]>
+> => {
   const error = new XORError(
     validators.map((validator) =>
-      introspectValidator<ArrReturnTypes<T>[number]>(validator)
+      introspectValidator<ArrReturnTypes<V>[number]>(validator)
     )
   );
   return create((value, ...parents) => {
@@ -156,22 +201,23 @@ export const xor = <T extends Validator<any>[]>(
       return acc;
     }, []);
     return passes.length === 1;
-  }, error);
+  })(error);
 };
 
-export const and = <T extends Validator<any>[]>(
-  ...validators: T
-): Validator<ANDError<Exclude<ArrReturnTypes<T>[number], undefined>[]>> => {
+export const and = <V extends Validator<any, any>[]>(
+  ...validators: V
+): Validator<
+  Infer<V[0]>,
+  ANDError<Exclude<ArrReturnTypes<V>[number], undefined>[]>
+> => {
   const error = new ANDError(
     validators.map((validator) =>
-      introspectValidator<ArrReturnTypes<T>[number]>(validator)
+      introspectValidator<ArrReturnTypes<V>[number]>(validator)
     )
   );
-  return create(
-    (value, ...parents) =>
-      validators.every((validator) => !isError(validator(value, ...parents))),
-    error
-  );
+  return create((value, ...parents) =>
+    validators.every((validator) => !isError(validator(value, ...parents)))
+  )(error);
 };
 
 // I suspect `array(string)` is going to be more commonly used as most of
@@ -179,13 +225,13 @@ export const and = <T extends Validator<any>[]>(
 // on the fact `instanceOf(Array)` isn't reliable.
 // It could in theory be written as `array(create(() => true))` but that'd
 // return `asStructure(['Expected array'])` err which probably isn't ideal.
-export const arr = create(Array.isArray, 'Expected array');
+export const arr = create<unknown[]>(Array.isArray)('Expected array');
 
 export const maxLength = (len: number) =>
   err(
     and(
       or(string, arr),
-      create((value) => (value as any[] | string).length <= len)
+      create((value) => (value as any[] | string).length <= len)('Invalid')
     ),
     `Expected max length ${len}`
   );
@@ -194,7 +240,7 @@ export const minLength = (len: number) =>
   err(
     and(
       or(string, arr),
-      create((value) => (value as any[] | string).length >= len)
+      create((value) => (value as any[] | string).length >= len)('Invalid')
     ),
     `Expected min length ${len}`
   );
@@ -209,78 +255,92 @@ export const length = (min: number, max: number = min) =>
 
 export const min = (num: number) =>
   err(
-    and(
-      number,
-      create((value) => (value as number) >= num)
-    ),
+    and(number, create((value) => (value as number) >= num)('Invalid')),
     `Expected min ${num}`
   );
 
 export const max = (num: number) =>
   err(
-    and(
-      number,
-      create((value) => (value as number) <= num)
-    ),
+    and(number, create((value) => (value as number) <= num)('Invalid')),
     `Expected max ${num}`
   );
 
-export const nullish = err(
-  or(typeOf('undefined'), is(null)),
-  'Expected nullish'
-);
+export const nullish = err(or(undef, nul), 'Expected nullish');
 
 export const includes = (value: any) =>
   err(
     and(
       or(arr, string),
-      create((actual) => (actual as string | any[]).includes(value))
+      create((actual) => (actual as string | any[]).includes(value))('Invalid')
     ),
     `Expected to include ${value}`
   );
 
 export const pattern = (regex: RegExp) =>
   err(
-    and(
-      string,
-      create((value) => regex.test(value as string))
-    ),
+    and(string, create((value) => regex.test(value as string))('Invalid')),
     `Expected to match pattern ${regex}`
   );
 
-export const oneOf = (...allowed: any[]) =>
-  err(or(...allowed.map(is)), `Expected one of ${allowed.join(', ')}`);
+export const oneOf = <T>(...allowed: any[]) =>
+  err(
+    or(...allowed.map((val) => is<T>(val))),
+    `Expected one of ${allowed.join(', ')}`
+  );
 
 export const not = <Err>(
-  validator: Validator<Err>
-): Validator<NegateError<Err>> =>
-  create(
-    (value, ...parents) => isError(validator(value, ...parents)),
+  validator: Validator<unknown, Err>
+): Validator<any, NegateError<Err>> =>
+  create((value, ...parents) => isError(validator(value, ...parents)))(
     new NegateError(introspectValidator(validator))
   );
 
+export type ArrayErrorStruct<V extends Validator<any, any>> = (
+  | ExtractErr<V>
+  | string
+  | undefined
+)[] &
+  IStructure;
+
 export const array =
-  <Err>(
-    validator: Validator<Err>
-  ): StructValidator<(Err | string | undefined)[] & IStructure> =>
+  <V extends Validator<any, any>>(
+    validator: V
+  ): StructValidator<Infer<V>[], ArrayErrorStruct<V>> =>
   (value, ...parents) => {
     if (value === INTROSPECT) {
-      return asStructure([introspectValidator(validator)]);
+      const err: ArrayErrorStruct<V> = asStructure([
+        introspectValidator(validator)
+      ]);
+      return err;
     }
     if (!Array.isArray(value)) {
       // NOTE: We could alternatively add an enumerable root symbol to the
       // structural array (like `object`) which means the return value could be
       // `Err | undefined` rather than `Err | string | undefined`.
-      return asStructure(['Expected array']);
+      const err: ArrayErrorStruct<V> = asStructure(['Expected array']);
+      return err;
     }
-    return asStructure(value.map((val) => validator(val, value, ...parents)));
+    const err: ArrayErrorStruct<V> = asStructure(
+      value.map((val) => validator(val, value, ...parents))
+    );
+    return err;
   };
 
-export const tuple = <T extends Validator<any>[]>(
-  ...validators: T
-): StructValidator<
-  Exclude<ArrReturnTypes<T>[number] | string, undefined>[] & IStructure
-> => {
+export type TupleErrorStruct<V extends Validator<any, any>[]> = Exclude<
+  ArrReturnTypes<V>[number] | string,
+  undefined
+>[] &
+  IStructure;
+
+// TODO: Figure out how to Infer a tuple type, i.e.
+// Infer<typeof tuple(string, number, boolean)> // (string | number | boolean)[] ❌
+// Infer<typeof tuple(string, number, boolean)> // [string, number, boolean] ✅
+// (I've tried a few ideas from GitHub / StackOverflow but `boolean` is incorrectly expanded to [true, false] 🤔)
+// https://stackoverflow.com/questions/69571110/how-to-turn-union-into-a-tuple-in-typescript
+// https://github.com/microsoft/TypeScript/issues/13298#issuecomment-885980381
+export const tuple = <V extends Validator<any, any>[]>(
+  ...validators: V
+): StructValidator<Infer<V[number]>[], TupleErrorStruct<V>> => {
   if (validators.length < 1) {
     throw new Error('tuple requires as least 1 validator');
   }
@@ -288,7 +348,7 @@ export const tuple = <T extends Validator<any>[]>(
     if (value === INTROSPECT || !Array.isArray(value)) {
       return asStructure(
         validators.map((validator) =>
-          introspectValidator<ArrReturnTypes<T>[number]>(validator)
+          introspectValidator<ArrReturnTypes<V>[number]>(validator)
         )
       );
     }
@@ -310,20 +370,23 @@ export const tuple = <T extends Validator<any>[]>(
 
 // Like `and` but error only includes failing clauses and doesn't short circuit evaluation (good for password
 // validation UIs or stacked error messages)
-export const all = <T extends Validator<any>[]>(
-  ...validators: T
-): Validator<ANDError<Exclude<ArrReturnTypes<T>[number], undefined>[]>> => {
+export const all = <V extends Validator<any, any>[]>(
+  ...validators: V
+): Validator<
+  Infer<V[0]>,
+  ANDError<Exclude<ArrReturnTypes<V>[number], undefined>[]>
+> => {
   return (value, ...parents) => {
     if (value === INTROSPECT) {
       return new ANDError(
         validators.map((validator) =>
-          introspectValidator<ArrReturnTypes<T>[number]>(validator)
+          introspectValidator<ArrReturnTypes<V>[number]>(validator)
         )
       );
     }
     const errors = validators
       .map((validator) => validator(value, ...parents))
-      .filter((val): val is Exclude<ArrReturnTypes<T>[number], undefined> =>
+      .filter((val): val is Exclude<ArrReturnTypes<V>[number], undefined> =>
         isError(val)
       );
     return errors.length ? new ANDError(errors) : undefined;
@@ -342,6 +405,13 @@ export type ObjectErrorStruct<
   [OBJECT_ROOT]?: string;
 } & IStructure;
 
+type _InferObject<T extends Record<any, (val: any, ...parents: any[]) => any>> =
+  {
+    [P in keyof T]: T[P] extends Validator<any, any> ? Infer<T[P]> : never;
+  };
+type InferObject<T extends Record<any, (val: any, ...parents: any[]) => any>> =
+  SelectivePartial<_InferObject<T>, keyof UndefinedProps<_InferObject<T>>>;
+
 export const object =
   <
     Validators extends Record<
@@ -351,7 +421,7 @@ export const object =
   >(
     validators: Validators,
     { allowUnknown = false }: { allowUnknown?: boolean } = {}
-  ): StructValidator<ObjectErrorStruct<Validators>> =>
+  ): StructValidator<InferObject<Validators>, ObjectErrorStruct<Validators>> =>
   (...parents: unknown[]) => {
     const values = parents[0];
     const introspecting = values === INTROSPECT;
@@ -390,47 +460,76 @@ export const object =
     }, ret);
   };
 
-export function merge<Err extends IStructure>(
-  validator: Validator<Err>
-): StructValidator<Err>;
-export function merge<Err1 extends IStructure, Err2 extends IStructure>(
-  validator1: Validator<Err1>,
-  validator2: Validator<Err2>
-): StructValidator<Err1 & Err2>;
+export function merge<ValidType, Err extends IStructure>(
+  validator: Validator<ValidType, Err>
+): StructValidator<ValidType, Err>;
 export function merge<
+  ValidType1,
+  ValidType2,
+  Err1 extends IStructure,
+  Err2 extends IStructure
+>(
+  validator1: Validator<ValidType1, Err1>,
+  validator2: Validator<ValidType2, Err2>
+): StructValidator<ValidType1 & ValidType2, Err1 & Err2>;
+export function merge<
+  ValidType1,
+  ValidType2,
+  ValidType3,
   Err1 extends IStructure,
   Err2 extends IStructure,
   Err3 extends IStructure
 >(
-  validator1: Validator<Err1>,
-  validator2: Validator<Err2>,
-  validator3: Validator<Err3>
-): StructValidator<Err1 & Err2 & Err3>;
+  validator1: Validator<ValidType1, Err1>,
+  validator2: Validator<ValidType2, Err2>,
+  validator3: Validator<ValidType3, Err3>
+): StructValidator<ValidType1 & ValidType2 & ValidType3, Err1 & Err2 & Err3>;
 export function merge<
+  ValidType1,
+  ValidType2,
+  ValidType3,
+  ValidType4,
   Err1 extends IStructure,
   Err2 extends IStructure,
   Err3 extends IStructure,
   Err4 extends IStructure
 >(
-  validator1: Validator<Err1>,
-  validator2: Validator<Err2>,
-  validator3: Validator<Err3>,
-  validator4: Validator<Err4>
-): StructValidator<Err1 & Err2 & Err3 & Err4>;
+  validator1: Validator<ValidType1, Err1>,
+  validator2: Validator<ValidType2, Err2>,
+  validator3: Validator<ValidType3, Err3>,
+  validator4: Validator<ValidType4, Err4>
+): StructValidator<
+  ValidType1 & ValidType2 & ValidType3 & ValidType4,
+  Err1 & Err2 & Err3 & Err4
+>;
 export function merge<
+  ValidType1,
+  ValidType2,
+  ValidType3,
+  ValidType4,
+  ValidType5,
   Err1 extends IStructure,
   Err2 extends IStructure,
   Err3 extends IStructure,
   Err4 extends IStructure,
   Err5 extends IStructure
 >(
-  validator1: Validator<Err1>,
-  validator2: Validator<Err2>,
-  validator3: Validator<Err3>,
-  validator4: Validator<Err4>,
-  validator5: Validator<Err5>
-): StructValidator<Err1 & Err2 & Err3 & Err4 & Err5>;
+  validator1: Validator<ValidType1, Err1>,
+  validator2: Validator<ValidType2, Err2>,
+  validator3: Validator<ValidType3, Err3>,
+  validator4: Validator<ValidType4, Err4>,
+  validator5: Validator<ValidType5, Err5>
+): StructValidator<
+  ValidType1 & ValidType2 & ValidType3 & ValidType4 & ValidType5,
+  Err1 & Err2 & Err3 & Err4 & Err5
+>;
 export function merge<
+  ValidType1,
+  ValidType2,
+  ValidType3,
+  ValidType4,
+  ValidType5,
+  ValidType6,
   Err1 extends IStructure,
   Err2 extends IStructure,
   Err3 extends IStructure,
@@ -438,14 +537,24 @@ export function merge<
   Err5 extends IStructure,
   Err6 extends IStructure
 >(
-  validator1: Validator<Err1>,
-  validator2: Validator<Err2>,
-  validator3: Validator<Err3>,
-  validator4: Validator<Err4>,
-  validator5: Validator<Err5>,
-  validator6: Validator<Err6>
-): StructValidator<Err1 & Err2 & Err3 & Err4 & Err5 & Err6>;
+  validator1: Validator<ValidType1, Err1>,
+  validator2: Validator<ValidType2, Err2>,
+  validator3: Validator<ValidType3, Err3>,
+  validator4: Validator<ValidType4, Err4>,
+  validator5: Validator<ValidType5, Err5>,
+  validator6: Validator<ValidType6, Err6>
+): StructValidator<
+  ValidType1 & ValidType2 & ValidType3 & ValidType4 & ValidType5 & ValidType6,
+  Err1 & Err2 & Err3 & Err4 & Err5 & Err6
+>;
 export function merge<
+  ValidType1,
+  ValidType2,
+  ValidType3,
+  ValidType4,
+  ValidType5,
+  ValidType6,
+  ValidType7,
   Err1 extends IStructure,
   Err2 extends IStructure,
   Err3 extends IStructure,
@@ -454,15 +563,32 @@ export function merge<
   Err6 extends IStructure,
   Err7 extends IStructure
 >(
-  validator1: Validator<Err1>,
-  validator2: Validator<Err2>,
-  validator3: Validator<Err3>,
-  validator4: Validator<Err4>,
-  validator5: Validator<Err5>,
-  validator6: Validator<Err6>,
-  validator7: Validator<Err7>
-): StructValidator<Err1 & Err2 & Err3 & Err4 & Err5 & Err6 & Err7>;
+  validator1: Validator<ValidType1, Err1>,
+  validator2: Validator<ValidType2, Err2>,
+  validator3: Validator<ValidType3, Err3>,
+  validator4: Validator<ValidType4, Err4>,
+  validator5: Validator<ValidType5, Err5>,
+  validator6: Validator<ValidType6, Err6>,
+  validator7: Validator<ValidType7, Err7>
+): StructValidator<
+  ValidType1 &
+    ValidType2 &
+    ValidType3 &
+    ValidType4 &
+    ValidType5 &
+    ValidType6 &
+    ValidType7,
+  Err1 & Err2 & Err3 & Err4 & Err5 & Err6 & Err7
+>;
 export function merge<
+  ValidType1,
+  ValidType2,
+  ValidType3,
+  ValidType4,
+  ValidType5,
+  ValidType6,
+  ValidType7,
+  ValidType8,
   Err1 extends IStructure,
   Err2 extends IStructure,
   Err3 extends IStructure,
@@ -472,15 +598,25 @@ export function merge<
   Err7 extends IStructure,
   Err8 extends IStructure
 >(
-  validator1: Validator<Err1>,
-  validator2: Validator<Err2>,
-  validator3: Validator<Err3>,
-  validator4: Validator<Err4>,
-  validator5: Validator<Err5>,
-  validator6: Validator<Err6>,
-  validator7: Validator<Err7>,
-  validator8: Validator<Err8>
-): StructValidator<Err1 & Err2 & Err3 & Err4 & Err5 & Err6 & Err7 & Err8>;
+  validator1: Validator<ValidType1, Err1>,
+  validator2: Validator<ValidType2, Err2>,
+  validator3: Validator<ValidType3, Err3>,
+  validator4: Validator<ValidType4, Err4>,
+  validator5: Validator<ValidType5, Err5>,
+  validator6: Validator<ValidType6, Err6>,
+  validator7: Validator<ValidType7, Err7>,
+  validator8: Validator<ValidType8, Err8>
+): StructValidator<
+  ValidType1 &
+    ValidType2 &
+    ValidType3 &
+    ValidType4 &
+    ValidType5 &
+    ValidType6 &
+    ValidType7 &
+    ValidType8,
+  Err1 & Err2 & Err3 & Err4 & Err5 & Err6 & Err7 & Err8
+>;
 export function merge(...validators: any[]): any {
   return (value: unknown, ...parents: any[]) => {
     const errors = validators
@@ -492,16 +628,14 @@ export function merge(...validators: any[]): any {
 
 export const when =
   (predicate: (value: unknown, ...parents: any[]) => boolean) =>
-  <Err>(validator: Validator<Err>): Validator<Err | string> =>
-    create(
+  <ValidType, Err>(validator: Validator<ValidType, Err>) =>
+    create<ValidType>(
       (value, ...parents) =>
-        !predicate(value, ...parents) || !isError(validator(value, ...parents)),
-      introspectValidator(validator)
-    );
+        !predicate(value, ...parents) || !isError(validator(value, ...parents))
+    )(introspectValidator(validator));
 
 export const match = (key: string) =>
-  create(
-    (value, parent) => parent != null && parent[key] === value,
+  create((value, parent) => parent != null && parent[key] === value)(
     `Expected to match ${key}`
   );
 
@@ -514,7 +648,9 @@ export const email = err(
 
 export const peer =
   (key: string) =>
-  <Err>(validator: Validator<Err>): Validator<PeerError<Err | string>> =>
+  <Err>(
+    validator: Validator<unknown, Err>
+  ): Validator<unknown, PeerError<Err>> =>
   (value, ...parents) => {
     if (value === INTROSPECT) {
       return new PeerError(key, introspectValidator(validator));

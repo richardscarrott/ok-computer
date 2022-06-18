@@ -33,3 +33,15 @@ export const isPlainObject = (value: unknown): value is Object => {
   const prototype = Object.getPrototypeOf(value);
   return prototype === null || prototype === Object.prototype;
 };
+
+type UndefinedPropKeys<T> = {
+  [K in keyof T]-?: undefined extends T[K] ? K : never;
+}[keyof T];
+
+export type UndefinedProps<T> = Pick<T, UndefinedPropKeys<T>>;
+
+// https://github.com/microsoft/TypeScript/issues/32562#issuecomment-515241378
+export type SelectivePartial<T, K extends keyof T> = Partial<Pick<T, K>> &
+  Required<Pick<T, Exclude<keyof T, K>>> extends infer U
+  ? { [P in keyof U]: U[P] }
+  : never;
