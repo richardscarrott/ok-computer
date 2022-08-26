@@ -182,7 +182,8 @@ export class NegateError<T>
 
 export class AssertError extends Error {
   public errors: ErrItem<any>[];
-  constructor(errors: ErrItem<any>[]) {
+  public value?: unknown;
+  constructor(errors: ErrItem<any>[], value?: unknown) {
     super();
     try {
       const firstError = errors[0];
@@ -197,5 +198,6 @@ export class AssertError extends Error {
       this.message = 'Invalid';
     }
     this.errors = errors;
+    this.value = value;
   }
 }

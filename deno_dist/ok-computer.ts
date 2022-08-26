@@ -93,15 +93,16 @@ export const isError = <Err>(err: Err): err is Exclude<Err, undefined> =>
   !!listErrors(err).length;
 export const hasError = isError;
 
-// TODO: assert type guard. Signature would have to change to
-// `assert(validator, values)`
-// Which does open the door to optionally logging the values too (desirable in some cases)
-export const assert = <Err>(err: Err) => {
-  const errors = listErrors(err);
+export function assert<V extends Validator>(
+  validator: V,
+  value: unknown,
+  logValue: boolean = false
+): asserts value is Infer<V> {
+  const errors = listErrors(validator(value));
   if (errors.length) {
-    throw new AssertError(errors);
+    throw new AssertError(errors, logValue ? value : undefined);
   }
-};
+}
 
 export const withErr =
   <Err, V extends Validator<any, any>>(
