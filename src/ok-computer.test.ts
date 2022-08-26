@@ -45,7 +45,8 @@ import {
   nandPeers,
   orPeers,
   oxorPeers,
-  xorPeers
+  xorPeers,
+  okay
 } from './ok-computer';
 import {
   ANDError,
@@ -2191,5 +2192,26 @@ describe('oxorPeer', () => {
         expect(() => assert(validator2, input)).toThrow();
       }
     });
+  });
+});
+
+describe('okay', () => {
+  const validator = and(array(number), minLength(1));
+
+  test('valid', () => {
+    expect(okay(validator, [1])).toBe(true);
+    expect(okay(validator, [1, 2, 3])).toBe(true);
+  });
+
+  test('invalid', () => {
+    expect(okay(validator, [])).toBe(false);
+    expect(okay(validator, 'erm')).toBe(false);
+  });
+
+  test('types', () => {
+    const value: unknown = [];
+    if (okay(validator, value)) {
+      value[0].toExponential(); // no ts-error
+    }
   });
 });
