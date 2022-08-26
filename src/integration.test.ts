@@ -44,13 +44,16 @@ it('works', () => {
     ),
     country: err(oneOf('US', 'GB'), 'Expected either US or GB')
   });
-  const errors1 = validator({
+  const input1 = {
     password: 'erm',
     addresses: [{ line2: false }, null]
-  });
+  };
+  const errors1 = validator(input1);
   expect(isError(errors1)).toBe(true);
   expect(hasError(errors1)).toBe(true);
-  expect(() => assert(errors1)).toThrow(new AssertError(listErrors(errors1)));
+  expect(() => assert(validator, input1)).toThrow(
+    new AssertError(listErrors(errors1))
+  );
   const error = new AssertError(listErrors(errors1));
   expect(error.message).toBe(
     'Invalid: first of 11 errors: username: (Expected typeof string and expected length between 3 and 30)'
@@ -127,7 +130,7 @@ it('works', () => {
         },
       ]
     `);
-  const errors2 = validator({
+  const input2 = {
     username: 'lh44',
     password: 'password123',
     repeat_password: 'password123',
@@ -140,10 +143,11 @@ it('works', () => {
       }
     ],
     country: 'GB'
-  });
+  };
+  const errors2 = validator(input2);
   expect(isError(errors2)).toBe(false);
   expect(hasError(errors2)).toBe(false);
-  expect(() => assert(errors2)).not.toThrow();
+  expect(() => assert(validator, input2)).not.toThrow();
   expect(errors2).toMatchInlineSnapshot(`
       Object {
         "access_token": undefined,
