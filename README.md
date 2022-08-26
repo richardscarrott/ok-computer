@@ -18,7 +18,7 @@
 
 > NOTE: This branch is v2 which has a few breaking changes. [v1 can be found here](https://github.com/richardscarrott/ok-computer/tree/v1.0.4).
 
-### V2 New Features
+### ✨✨ V2 New Features (Coming Soon) ✨✨
 
 1. Type inference
    - `type Foo = Infer<typeof validator>`
