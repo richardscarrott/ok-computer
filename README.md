@@ -16,6 +16,20 @@
 
 📦 Available on [npm](https://www.npmjs.com/package/ok-computer) and [deno.land](https://deno.land/x/ok_computer).
 
+> NOTE: This branch is v2 which has a few breaking changes. [v1 can be found here](https://github.com/richardscarrott/ok-computer/tree/v1.0.4).
+
+### V2 New Features
+
+1. Type inference
+
+- `type Foo = Infer<typeof validator>`
+
+1. Type guard
+
+- `if (okay(string, value)) { value.trim(); }`
+  1/ Assert guard
+- `assert(string, value); value.trim();`
+
 ![Alt Text](ok-computer-demo.gif)
 
 [Install](#install) | [Example](#example) | [Concepts](#✨-concepts) | [API Docs](#api)
