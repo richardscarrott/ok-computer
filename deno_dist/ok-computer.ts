@@ -104,6 +104,16 @@ export function assert<V extends Validator>(
   }
 }
 
+export const okay = <V extends Validator>(
+  validator: V,
+  value: unknown
+): value is Infer<V> => {
+  if (isError(validator(value))) {
+    return false;
+  }
+  return true;
+};
+
 export const withErr =
   <Err, V extends Validator<any, any>>(
     validator: V,
