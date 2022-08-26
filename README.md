@@ -21,14 +21,11 @@
 ### V2 New Features
 
 1. Type inference
-
-- `type Foo = Infer<typeof validator>`
-
+   - `type Foo = Infer<typeof validator>`
 1. Type guard
-
-- `if (okay(string, value)) { value.trim(); }`
-  1/ Assert guard
-- `assert(string, value); value.trim();`
+   - `if (okay(string, value)) { value.trim(); }`
+1. Assert guard
+   - `assert(string, value); value.trim();`
 
 ![Alt Text](ok-computer-demo.gif)
 
