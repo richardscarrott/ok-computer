@@ -1,6 +1,6 @@
 {
   "name": "ok-computer",
-  "version": "1.0.4",
+  "version": "2.0.0-next.0",
   "description": "'Functions all the way down' data validation for JavaScript and TypeScript.",
   "author": {
     "name": "Richard Scarrott",

@@ -221,14 +221,14 @@ describe('listErrors', () => {
 describe('create', () => {
   it('accepts a predicate and returns a validator', () => {
     const error = 'Expected typeof string';
-    const validator = create((value) => typeof value === 'string', error);
+    const validator = create((value) => typeof value === 'string')(error);
     expect(validator).toBeInstanceOf(Function);
     expect(validator('A string')).toBe(undefined);
     expect(validator(123)).toBe(error);
     expect(validator(undefined)).toBe(error);
     expect(validator(null)).toBe(error);
     const error2 = { id: 'invalid' };
-    const validator2 = create((value) => typeof value === 'number', error2);
+    const validator2 = create((value) => typeof value === 'number')(error2);
     expect(validator2).toBeInstanceOf(Function);
     expect(validator2(123)).toBe(undefined);
     expect(validator2('A string')).toBe(error2);
@@ -238,7 +238,7 @@ describe('create', () => {
 
   it('supports error introspection', () => {
     const error = 'Invalid';
-    const validator = create(() => true, error);
+    const validator = create(() => true)(error);
     expect(validator(INTROSPECT)).toBe(error);
   });
 });
@@ -501,7 +501,7 @@ describe('or', () => {
   describe('introspection', () => {
     it('returns the error', () => {
       const validator = or(
-        create(() => true),
+        create(() => true)('Invalid'),
         () => 'Expected something else'
       );
       const err = validator(INTROSPECT);
@@ -511,16 +511,13 @@ describe('or', () => {
 
   describe('short-circuit evaluation', () => {
     it('does not unnecessarily call validators', () => {
-      const validator1 = or(
-        create(() => true, 'Invalid'),
-        (value) => {
-          if (value === INTROSPECT) {
-            // Introspection is allowed
-            return 'Invalid';
-          }
-          throw new Error('Should not get here');
+      const validator1 = or(create(() => true)('Invalid'), (value) => {
+        if (value === INTROSPECT) {
+          // Introspection is allowed
+          return 'Invalid';
         }
-      );
+        throw new Error('Should not get here');
+      });
       expect(() => validator1('123')).not.toThrow();
     });
   });
@@ -568,7 +565,7 @@ describe('xor', () => {
   describe('introspection', () => {
     it('returns an error', () => {
       const validator = xor(
-        create(() => true),
+        create(() => true)('Invalid'),
         () => 'Expected something else'
       );
       const err = validator(INTROSPECT);
@@ -579,8 +576,8 @@ describe('xor', () => {
   describe('short-circuit evaluation', () => {
     it('does not unnecessarily call validators', () => {
       const validator1 = xor(
-        create(() => true, 'Invalid'),
-        create(() => true, 'Invalid'),
+        create(() => true)('Invalid'),
+        create(() => true)('Invalid'),
         (value) => {
           if (value === INTROSPECT) {
             // Introspection is allowed
@@ -642,7 +639,7 @@ describe('and', () => {
   describe('introspection', () => {
     it('returns an error', () => {
       const validator = and(
-        create(() => true),
+        create(() => true)('Invalid'),
         () => 'Expected something else'
       );
       const err = validator(INTROSPECT);
@@ -652,16 +649,13 @@ describe('and', () => {
 
   describe('short-circuit evaluation', () => {
     it('does not unnecessarily call validators', () => {
-      const validator1 = and(
-        create(() => false, 'Invalid'),
-        (value) => {
-          if (value === INTROSPECT) {
-            // Introspection is allowed
-            return 'Invalid';
-          }
-          throw new Error('Should not get here');
+      const validator1 = and(create(() => false)('Invalid'), (value) => {
+        if (value === INTROSPECT) {
+          // Introspection is allowed
+          return 'Invalid';
         }
-      );
+        throw new Error('Should not get here');
+      });
       expect(() => validator1('123')).not.toThrow();
     });
   });
@@ -1288,9 +1282,9 @@ describe('all', () => {
 
   it("and doesn't short-circuit evaluation", () => {
     const validator1 = all(
-      create(() => false, 'First error'),
-      create(() => true, 'Second error'),
-      create(() => false, 'Third error')
+      create(() => false)('First error'),
+      create(() => true)('Second error'),
+      create(() => false)('Third error')
     );
     expect(validator1('123')).toEqual(
       new ANDError(['First error', 'Third error'])
@@ -1300,7 +1294,7 @@ describe('all', () => {
   describe('introspection', () => {
     it('returns an error', () => {
       const validator = all(
-        create(() => true),
+        create(() => true)('Invalid'),
         () => 'Expected something else'
       );
       const err = validator(INTROSPECT);
@@ -1553,7 +1547,7 @@ describe('object', () => {
   it('supports introspection', () => {
     const validator = object({
       firstName: string,
-      lastName: create(() => true),
+      lastName: create(() => true)('Invalid'),
       picture: object({
         url: err(or(nullish, string), 'Expected nullish or string')
       })
