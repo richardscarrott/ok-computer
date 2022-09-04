@@ -46,7 +46,8 @@ import {
   orPeers,
   oxorPeers,
   xorPeers,
-  okay
+  okay,
+  exists
 } from './ok-computer';
 import {
   ANDError,
@@ -2213,5 +2214,33 @@ describe('okay', () => {
     if (okay(validator, value)) {
       value[0].toExponential(); // no ts-error
     }
+  });
+});
+
+describe('exists', () => {
+  test('valid', () => {
+    expect(exists('')).toBe(undefined);
+    expect(exists(' ')).toBe(undefined);
+    expect(exists('foo')).toBe(undefined);
+    expect(exists(true)).toBe(undefined);
+    expect(exists(false)).toBe(undefined);
+    expect(exists(-1)).toBe(undefined);
+    expect(exists(0)).toBe(undefined);
+    expect(exists(1)).toBe(undefined);
+    expect(exists(NaN)).toBe(undefined);
+    expect(exists(Infinity)).toBe(undefined);
+    expect(exists(-Infinity)).toBe(undefined);
+    expect(exists({})).toBe(undefined);
+    expect(exists({ foo: 'bar' })).toBe(undefined);
+    expect(exists([])).toBe(undefined);
+    expect(exists(new Date('2021-01-09'))).toBe(undefined);
+  });
+
+  test('invalid', () => {
+    expect(exists(undefined)).toEqual(new NegateError('Expected nullish'));
+    expect(exists(null)).toEqual(new NegateError('Expected nullish'));
+    expect(JSON.stringify(exists(undefined))).toBe(
+      '"not(\\"Expected nullish\\")"'
+    );
   });
 });
