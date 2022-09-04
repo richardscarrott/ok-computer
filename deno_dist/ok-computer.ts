@@ -28,7 +28,7 @@ export type StructValidator<
   Err extends IStructure = any
 > = ((value: unknown, ...parents: any[]) => Err) & ValidatorTypeMeta<ValidType>;
 
-type ExtractErr<V extends Validator<any, any>> = Exclude<
+export type ExtractErr<V extends Validator<any, any>> = Exclude<
   ReturnType<V>,
   undefined
 >;
@@ -312,12 +312,12 @@ export const oneOf = <T>(...allowed: any[]) =>
     `Expected one of ${allowed.join(', ')}`
   );
 
-export const not = <Err>(
+export const not = <ValidType, Err>(
   validator: Validator<unknown, Err>
-): Validator<any, NegateError<Err>> =>
-  create((value, ...parents) => isError(validator(value, ...parents)))(
-    new NegateError(introspectValidator(validator))
-  );
+): Validator<ValidType, NegateError<Err>> =>
+  create<ValidType>((value, ...parents) =>
+    isError(validator(value, ...parents))
+  )(new NegateError(introspectValidator(validator)));
 
 export type ArrayErrorStruct<V extends Validator<any, any>> = (
   | ExtractErr<V>
@@ -711,3 +711,12 @@ export const oxorPeers = (...keys: string[]) =>
     xor(not(nullish), ...keys.map((key) => peer(key)(not(nullish))))
   );
 export const oxorPeer = (key: string) => oxorPeers(key);
+
+// `exists` is an alias for `not(nullish)` with a more accurate valid type.
+// Allows `okay` and `assert` to infer the positive case without a specific validator, e.g.
+// const fn = (foo?: { id: string }) => {
+//   assert(exists, foo);
+//   foo.id.startsWith('bar');
+// };
+// It allows ok computers' `assert` fn to handle the common assert case provided by node et al.
+export const exists = not<{}, ExtractErr<typeof nullish>>(nullish);
