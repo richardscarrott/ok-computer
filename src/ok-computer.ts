@@ -104,10 +104,23 @@ export function assert<V extends Validator>(
   }
 }
 
+const ONE_SIDED = Symbol.for('ok-computer.one-sided');
+
+type OneSided<T> = T & {
+  readonly [ONE_SIDED]?: void;
+};
+
 export const okay = <V extends Validator>(
   validator: V,
   value: unknown
-): value is Infer<V> => {
+  // HACK: Err on the side of caution with a "one sided" type guard as in many cases it's
+  // unsound to infer the negative case from a validator.
+  // https://stackoverflow.com/a/73513991/607471
+  // https://github.com/microsoft/TypeScript/issues/15048#issuecomment-534376266
+  // https://www.typescriptlang.org/play?#code/PTAEAsBdIBwZwFwjpAhgYwNYHsBuBTAJwDMAbbAdwDp1sBbYARwFd8UBLbAOzmAHYAzAFYAjAAYAHACY+wSAE8Y+ALQBzZqkIATZcx7Y9W0vOVdNhSnF1dOXZQqXL2d-KTgqARoVRd04ALAAUEG0PJCg7HAAyuDYhJBRkITOqqAAvKAAFLiopKwIoD7yAJQFOXn4EXCgKMlcqWkAfKAA3kGgoIT4kMyEXKAO+NjEoOWs6WkZAOS1KVOgAGQLo7msVKT49ZDgoAA8oOIA3EEAvkFBIKAAQqhaIdwooMRcIulZY-gFs-WgAD6gXGYdA8RGK6WabUCHQiI0ykRicQSSRS2VW+GKYMh0Ohl0AoOSgADCcS66EgxgB5ko+C0A2wNWR9Xa2M63V6-Q+VGRdEyxWOUI6J1ArncrSZ2MugBlyUAASV8xPwpPJZkIFgo1NpoAABoDgURNVkACrgSKgWjMUg0jikUigEGFel1VIUdjbUAbLY7fbiYpi6FdHp9FYVTnYACiAA8YNxNpB2LkeXzoWdAsmLmAAOLYbB3QKhR7PKRvVEVL4M1L-HUgwhgpqi-kwrKDYZB8aTabfVTzJYt-DrTaqV3Nb115mgPGE+WK+QUlVUmmQOmajua30df1snuc5Lc3liwXCypY5njokqhVk6ddOioZzVJdlv4AoFVlf1v2swMchcRqNcGNx0gEzHMBQ1nQg91OIIgA
+  // NOTE: This isn't necessary for `assert` because, in terms of control flow, it only
+  // exposes a positive case.
+): value is OneSided<Infer<V>> => {
   if (isError(validator(value))) {
     return false;
   }
