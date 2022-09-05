@@ -47,7 +47,9 @@ import {
   oxorPeers,
   xorPeers,
   okay,
-  exists
+  exists,
+  truthy,
+  falsy
 } from './ok-computer';
 import {
   ANDError,
@@ -55,7 +57,8 @@ import {
   ORError,
   XORError,
   asStructure,
-  isIStructure
+  isIStructure,
+  AssertError
 } from './errors';
 
 describe('listErrors', () => {
@@ -1716,9 +1719,9 @@ describe('andPeer', () => {
   ].forEach((t) => {
     test(t.description, () => {
       if (t.valid) {
-        expect(() => assert(validator, t.input)).not.toThrow();
+        expect(() => assert(t.input, validator)).not.toThrow();
       } else {
-        expect(() => assert(validator, t.input)).toThrow();
+        expect(() => assert(t.input, validator)).toThrow();
       }
     });
   });
@@ -1743,9 +1746,9 @@ describe('andPeer', () => {
       const toVal = (v: unknown) => (v ? 'valid value' : undefined);
       const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
       if (Q) {
-        expect(() => assert(validator2, input)).not.toThrow();
+        expect(() => assert(input, validator2)).not.toThrow();
       } else {
-        expect(() => assert(validator2, input)).toThrow();
+        expect(() => assert(input, validator2)).toThrow();
       }
     });
   });
@@ -1826,9 +1829,9 @@ describe('nandPeer', () => {
   ].forEach((t) => {
     test(t.description, () => {
       if (t.valid) {
-        expect(() => assert(validator, t.input)).not.toThrow();
+        expect(() => assert(t.input, validator)).not.toThrow();
       } else {
-        expect(() => assert(validator, t.input)).toThrow();
+        expect(() => assert(t.input, validator)).toThrow();
       }
     });
   });
@@ -1854,9 +1857,9 @@ describe('nandPeer', () => {
       const toVal = (v: unknown) => (v ? 'valid value' : undefined);
       const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
       if (Q) {
-        expect(() => assert(validator2, input)).not.toThrow();
+        expect(() => assert(input, validator2)).not.toThrow();
       } else {
-        expect(() => assert(validator2, input)).toThrow();
+        expect(() => assert(input, validator2)).toThrow();
       }
     });
   });
@@ -1937,9 +1940,9 @@ describe('orPeer', () => {
   ].forEach((t) => {
     test(t.description, () => {
       if (t.valid) {
-        expect(() => assert(validator, t.input)).not.toThrow();
+        expect(() => assert(t.input, validator)).not.toThrow();
       } else {
-        expect(() => assert(validator, t.input)).toThrow();
+        expect(() => assert(t.input, validator)).toThrow();
       }
     });
   });
@@ -1965,9 +1968,9 @@ describe('orPeer', () => {
       const toVal = (v: unknown) => (v ? 'valid value' : undefined);
       const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
       if (Q) {
-        expect(() => assert(validator2, input)).not.toThrow();
+        expect(() => assert(input, validator2)).not.toThrow();
       } else {
-        expect(() => assert(validator2, input)).toThrow();
+        expect(() => assert(input, validator2)).toThrow();
       }
     });
   });
@@ -2048,9 +2051,9 @@ describe('xorPeer', () => {
   ].forEach((t) => {
     test(t.description, () => {
       if (t.valid) {
-        expect(() => assert(validator, t.input)).not.toThrow();
+        expect(() => assert(t.input, validator)).not.toThrow();
       } else {
-        expect(() => assert(validator, t.input)).toThrow();
+        expect(() => assert(t.input, validator)).toThrow();
       }
     });
   });
@@ -2076,9 +2079,9 @@ describe('xorPeer', () => {
       const toVal = (v: unknown) => (v ? 'valid value' : undefined);
       const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
       if (Q) {
-        expect(() => assert(validator2, input)).not.toThrow();
+        expect(() => assert(input, validator2)).not.toThrow();
       } else {
-        expect(() => assert(validator2, input)).toThrow();
+        expect(() => assert(input, validator2)).toThrow();
       }
     });
   });
@@ -2161,9 +2164,9 @@ describe('oxorPeer', () => {
     test(t.description, () => {
       const errors = validator(t.input);
       if (t.valid) {
-        expect(() => assert(validator, t.input)).not.toThrow();
+        expect(() => assert(t.input, validator)).not.toThrow();
       } else {
-        expect(() => assert(validator, t.input)).toThrow();
+        expect(() => assert(t.input, validator)).toThrow();
       }
     });
   });
@@ -2188,9 +2191,9 @@ describe('oxorPeer', () => {
       const toVal = (v: unknown) => (v ? 'valid value' : undefined);
       const input = { A: toVal(A), B: toVal(B), C: toVal(C) };
       if (Q) {
-        expect(() => assert(validator2, input)).not.toThrow();
+        expect(() => assert(input, validator2)).not.toThrow();
       } else {
-        expect(() => assert(validator2, input)).toThrow();
+        expect(() => assert(input, validator2)).toThrow();
       }
     });
   });
@@ -2200,20 +2203,68 @@ describe('okay', () => {
   const validator = and(array(number), minLength(1));
 
   test('valid', () => {
-    expect(okay(validator, [1])).toBe(true);
-    expect(okay(validator, [1, 2, 3])).toBe(true);
+    expect(okay([1], validator)).toBe(true);
+    expect(okay([1, 2, 3], validator)).toBe(true);
   });
 
   test('invalid', () => {
-    expect(okay(validator, [])).toBe(false);
-    expect(okay(validator, 'erm')).toBe(false);
+    expect(okay([], validator)).toBe(false);
+    expect(okay('erm', validator)).toBe(false);
   });
 
   test('types', () => {
     const value: unknown = [];
-    if (okay(validator, value)) {
+    if (okay(value, validator)) {
       value[0].toExponential(); // no ts-error
     }
+  });
+});
+
+describe('assert', () => {
+  test('valid', () => {
+    expect(() => assert('', string)).not.toThrow();
+    expect(() => assert('123', string)).not.toThrow();
+    expect(() => assert(123, number)).not.toThrow();
+    expect(() => assert(123, number, new Error('Invalid'))).not.toThrow();
+    expect(() =>
+      assert(123, number, () => (null as any).runtimeError)
+    ).not.toThrow();
+  });
+
+  test('invalid', () => {
+    expect(() => assert(1, string)).toThrowError(
+      new AssertError(listErrors(string(1)))
+    );
+    expect(() => assert(false, string)).toThrowError(
+      new AssertError(listErrors(string(false)))
+    );
+    expect(() => assert(0, string, 'Custom Error')).toThrowError(
+      new Error('Custom Error')
+    );
+    expect(() => assert(1, string, new Error('Custom Error'))).toThrowError(
+      new Error('Custom Error')
+    );
+    class MyError extends Error {
+      public info: any;
+      constructor(message: string, info: any) {
+        super(message);
+        this.info = info;
+      }
+    }
+    expect(() =>
+      assert(
+        1,
+        string,
+        ({ error, errorList }) =>
+          new MyError('Custom Error', { error, errorList })
+      )
+    ).toThrowError(
+      expect.objectContaining({
+        constructor: MyError,
+        message: 'Custom Error',
+        info: { error: string(1), errorList: listErrors(string(1)) }
+      })
+    );
   });
 });
 
@@ -2242,5 +2293,79 @@ describe('exists', () => {
     expect(JSON.stringify(exists(undefined))).toBe(
       '"not(\\"Expected nullish\\")"'
     );
+  });
+});
+
+describe('truthy', () => {
+  describe('valid', () => {
+    [
+      true,
+      -1,
+      1,
+      2,
+      Infinity,
+      ' ',
+      'a',
+      'ab',
+      Symbol('foo'),
+      {},
+      { foo: 'bar' },
+      [],
+      () => {},
+      /foo/,
+      new Set(),
+      new Map(),
+      new Error(),
+      new Date('2021-01-09')
+    ].forEach((val) => {
+      test(String(val), () => {
+        expect(truthy(val)).toBe(undefined);
+      });
+    });
+  });
+
+  describe('invalid', () => {
+    [false, null, 0, NaN, ''].forEach((val) => {
+      test(String(val), () => {
+        expect(truthy(val)).toBe('Expected truthy value');
+      });
+    });
+  });
+});
+
+describe('falsy', () => {
+  describe('valid', () => {
+    [false, null, undefined, 0, NaN, ''].forEach((val) => {
+      test(String(val), () => {
+        expect(falsy(val)).toBe(undefined);
+      });
+    });
+  });
+
+  describe('invalid', () => {
+    [
+      true,
+      -1,
+      1,
+      2,
+      Infinity,
+      ' ',
+      'a',
+      'ab',
+      Symbol('foo'),
+      {},
+      { foo: 'bar' },
+      [],
+      () => {},
+      /foo/,
+      new Set(),
+      new Map(),
+      new Error(),
+      new Date('2021-01-09')
+    ].forEach((val) => {
+      test(String(val), () => {
+        expect(falsy(val)).toBe('Expected falsy value');
+      });
+    });
   });
 });
