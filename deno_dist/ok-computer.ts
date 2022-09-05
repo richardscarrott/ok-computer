@@ -93,15 +93,29 @@ export const isError = <Err>(err: Err): err is Exclude<Err, undefined> =>
   !!listErrors(err).length;
 export const hasError = isError;
 
+export interface AssertErrParams<Err> {
+  readonly error: Err;
+  readonly errorList: ErrItem<unknown>[];
+}
+
 export function assert<V extends Validator>(
-  validator: V,
   value: unknown,
-  logValue: boolean = false
+  validator: V,
+  err:
+    | Error
+    | string
+    | ((params: AssertErrParams<ExtractErr<V>>) => Error | string) = ({
+    errorList
+  }) => new AssertError(errorList)
 ): asserts value is Infer<V> {
-  const errors = listErrors(validator(value));
-  if (errors.length) {
-    throw new AssertError(errors, logValue ? value : undefined);
+  const error = validator(value);
+  const errorList = listErrors(error);
+  if (!errorList.length) {
+    return;
   }
+  const result =
+    typeof err === 'function' ? err({ error: error as any, errorList }) : err;
+  throw typeof result === 'string' ? new Error(result) : result;
 }
 
 const ONE_SIDED = Symbol.for('ok-computer.one-sided');
@@ -111,8 +125,8 @@ type OneSided<T> = T & {
 };
 
 export const okay = <V extends Validator>(
-  validator: V,
-  value: unknown
+  value: unknown,
+  validator: V
   // HACK: Err on the side of caution with a "one sided" type guard as in many cases it's
   // unsound to infer the negative case from a validator.
   // https://stackoverflow.com/a/73513991/607471
@@ -715,8 +729,13 @@ export const oxorPeer = (key: string) => oxorPeers(key);
 // `exists` is an alias for `not(nullish)` with a more accurate valid type.
 // Allows `okay` and `assert` to infer the positive case without a specific validator, e.g.
 // const fn = (foo?: { id: string }) => {
-//   assert(exists, foo);
+//   assert(foo, exists);
 //   foo.id.startsWith('bar');
 // };
 // It allows ok computers' `assert` fn to handle the common assert case provided by node et al.
 export const exists = not<{}, ExtractErr<typeof nullish>>(nullish);
+
+export const truthy = create<{}>((value) => !!value)('Expected truthy value');
+
+export type Falsy = false | null | undefined | '' | number; // `number` covers `0` and `NaN`
+export const falsy = create<Falsy>((value) => !value)('Expected falsy value');
