@@ -4,7 +4,7 @@ export const ownEntries = <T>(
 ): [string | symbol, T][] =>
   Reflect.ownKeys(obj).map((key) => [key, (obj as any)[key]]);
 
-// Like Object.entires but returns enumerable symbols
+// Like Object.entries but returns enumerable symbols
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Enumerability_and_ownership_of_properties#detection_table
 export const ownEnumerableEntries = <T>(
   obj: { [key: string | symbol]: T } | ArrayLike<T>

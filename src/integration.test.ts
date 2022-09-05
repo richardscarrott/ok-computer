@@ -51,7 +51,7 @@ it('works', () => {
   const errors1 = validator(input1);
   expect(isError(errors1)).toBe(true);
   expect(hasError(errors1)).toBe(true);
-  expect(() => assert(validator, input1)).toThrow(
+  expect(() => assert(input1, validator)).toThrowError(
     new AssertError(listErrors(errors1))
   );
   const error = new AssertError(listErrors(errors1));
@@ -147,7 +147,7 @@ it('works', () => {
   const errors2 = validator(input2);
   expect(isError(errors2)).toBe(false);
   expect(hasError(errors2)).toBe(false);
-  expect(() => assert(validator, input2)).not.toThrow();
+  expect(() => assert(input2, validator)).not.toThrow();
   expect(errors2).toMatchInlineSnapshot(`
       Object {
         "access_token": undefined,
