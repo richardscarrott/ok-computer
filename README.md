@@ -14,7 +14,7 @@
 
 🔌 Don't like something? Need extra functionality? Write a function.
 
-☕ Zero dependencies (it's < 500 lines of code including types).
+☕ Zero dependencies (it's < 500 lines of code).
 
 📦 Available on [npm](https://www.npmjs.com/package/ok-computer) and [deno.land](https://deno.land/x/ok_computer). Runs anywhere.
 
