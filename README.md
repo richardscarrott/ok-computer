@@ -430,11 +430,11 @@ type Type = Infer<typeof validator>; // string
 
 const value: unknown = 'foo';
 
-if (okay(value, and(string, length(3)))) {
+if (okay(value, validator)) {
   typeof value; // string
 }
 
-assert(value, and(string, length(3))); // throw new AssertError('Invalid: first of 1 error: (Expected typeof string and expected length 3)')
+assert(value, validator); // throw new AssertError('Invalid: first of 1 error: (Expected typeof string and expected length 3)')
 typeof value; // string
 ```
 
@@ -474,7 +474,7 @@ const thirtyThree: Validator<33, string> = (value) =>
 type ThirtyThree = Infer<typeof thirtyThree>; // 33
 ```
 
-Built-in validators come pre-baked with a valid type, however you can override it using `annotate`.
+However you can override the valid type on any validator using `annotate`.
 
 ```ts
 import { annotate, and, integer, min, max } from 'ok-computer';
