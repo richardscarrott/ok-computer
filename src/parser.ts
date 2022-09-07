@@ -5,19 +5,24 @@ import { isPlainObject } from './utils';
 
 export type Parser = (value: any) => any;
 
-export const trim = (value: string) => value.trim();
-export const trimEnd = (value: string) => value.trimEnd();
-export const trimStart = (value: string) => value.trimStart();
-export const uppercase = (value: string) => value.toUpperCase();
-export const lowercase = (value: string) => value.toLowerCase();
-export const padStart = (padding: number) => (value: string) =>
-  value.padStart(padding);
-export const padEnd = (padding: number) => (value: string) =>
-  value.padEnd(padding);
+export const trim = (value: unknown) =>
+  typeof value === 'string' ? value.trim() : value;
+export const trimEnd = (value: unknown) =>
+  typeof value === 'string' ? value.trimEnd() : value;
+export const trimStart = (value: unknown) =>
+  typeof value === 'string' ? value.trimStart() : value;
+export const uppercase = (value: unknown) =>
+  typeof value === 'string' ? value.toUpperCase() : value;
+export const lowercase = (value: unknown) =>
+  typeof value === 'string' ? value.toLowerCase() : value;
+export const padStart = (padding: number) => (value: unknown) =>
+  typeof value === 'string' ? value.padStart(padding) : value;
+export const padEnd = (padding: number) => (value: unknown) =>
+  typeof value === 'string' ? value.padEnd(padding) : value;
 export const split =
   (...args: Parameters<typeof String.prototype.split>) =>
-  (value: string) =>
-    value.split(...args);
+  (value: unknown) =>
+    typeof value === 'string' ? value.split(...args) : value;
 export const nullWhen =
   <T>(nullValue: T) =>
   (value: any): T | null =>
