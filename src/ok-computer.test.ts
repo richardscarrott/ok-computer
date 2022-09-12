@@ -362,7 +362,7 @@ describe('boolean', () => {
 describe('bigint', () => {
   it('checks whether value is a bigint', () => {
     const err = 'Expected typeof bigint';
-    expect(bigint(0n)).toBe(undefined);
+    expect(bigint(BigInt(0))).toBe(undefined);
     expect(bigint(BigInt(100))).toBe(undefined);
     expect(bigint('A String')).toBe(err);
     expect(bigint(100)).toBe(err);
