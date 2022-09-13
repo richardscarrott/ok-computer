@@ -48,7 +48,7 @@
     "dev": "rm -rf dist & rollup -c -w",
     "test": "jest",
     "test:types": "jest -c jest.config.tsd.js",
-    "prepublish": "npm run test & npm run test:types & npm run build"
+    "prepublishOnly": "npm run test & npm run test:types & npm run build"
   },
   "files": [
     "dist"
