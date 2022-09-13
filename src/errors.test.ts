@@ -18,7 +18,7 @@ describe('LogicalOperatorError', () => {
     const err2 = new LogicalOperatorError('OR', [
       'Expected string',
       123,
-      BigInt(Number.MAX_SAFE_INTEGER) + 1n,
+      BigInt(Number.MAX_SAFE_INTEGER) + BigInt(1),
       true,
       false,
       undefined,
