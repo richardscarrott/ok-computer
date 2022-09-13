@@ -4,5 +4,6 @@ module.exports = {
     name: 'types'
   },
   runner: 'jest-runner-tsd',
-  testMatch: ['<rootDir>/src/**/*.test-d.ts']
+  testMatch: ['<rootDir>/src/**/*.test-d.ts'],
+  testTimeout: 10000
 };
