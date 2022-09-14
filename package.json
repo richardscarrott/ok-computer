@@ -49,6 +49,7 @@
     "@types/jest": "^27.4.1",
     "benny": "^3.7.1",
     "denoify": "^0.11.0",
+    "esbuild": "^0.15.7",
     "jest": "^27.5.1",
     "jest-runner-tsd": "^4.0.0",
     "ok-computer": "^1.0.0",
