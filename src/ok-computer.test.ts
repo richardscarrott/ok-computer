@@ -1386,15 +1386,15 @@ describe('object', () => {
         favouriteColors: ['Blue', 'Red']
       };
       expect(validator(validUser)).toMatchInlineSnapshot(`
-        Object {
-          "address": Object {
+        {
+          "address": {
             "city": undefined,
             "country": undefined,
             "line1": undefined,
             "line2": undefined,
             "state": undefined,
             "zip": undefined,
-            Symbol(test): Object {
+            Symbol(test): {
               Symbol(test2): undefined,
             },
           },
@@ -1421,22 +1421,22 @@ describe('object', () => {
       expect(isError(errors)).toBe(true);
 
       expect(errors).toMatchInlineSnapshot(`
-        Object {
-          "address": Object {
+        {
+          "address": {
             "city": "Expected typeof string",
             "country": "Expected typeof string",
             "line1": undefined,
             "line2": undefined,
             "state": undefined,
             "zip": "Expected typeof string",
-            Symbol(test): Object {
+            Symbol(test): {
               Symbol(ok-computer.object-root): "Expected object",
               Symbol(test2): "Expected typeof string",
             },
           },
-          "favouriteColors": Object {
-            "errors": Array [
-              Array [
+          "favouriteColors": {
+            "errors": [
+              [
                 "Expected typeof string",
               ],
               "Expected max length 3",
@@ -1450,35 +1450,35 @@ describe('object', () => {
         }
       `);
       expect(listErrors(errors)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "err": "(Expected typeof string and expected min length 1 and expected max length 255)",
             "path": "lastName",
           },
-          Object {
+          {
             "err": "Expected typeof string",
             "path": "address.city",
           },
-          Object {
+          {
             "err": "Expected typeof string",
             "path": "address.zip",
           },
-          Object {
+          {
             "err": "Expected typeof string",
             "path": "address.country",
           },
-          Object {
+          {
             "err": "Expected object",
             "path": "address.Symbol(test).Symbol(ok-computer.object-root)",
           },
-          Object {
+          {
             "err": "Expected typeof string",
             "path": "address.Symbol(test).Symbol(test2)",
           },
-          Object {
-            "err": Object {
-              "errors": Array [
-                Array [
+          {
+            "err": {
+              "errors": [
+                [
                   "Expected typeof string",
                 ],
                 "Expected max length 3",
@@ -1500,7 +1500,7 @@ describe('object', () => {
       });
       const valid = validator({ firstName: 'Lewis', lastName: 'Hamilton' });
       expect(valid).toMatchInlineSnapshot(`
-        Object {
+        {
           "firstName": undefined,
           "lastName": undefined,
           "middleName": undefined,
@@ -1514,11 +1514,11 @@ describe('object', () => {
         unknownProp2: ['prop']
       });
       expect(invalid).toMatchInlineSnapshot(`
-        Object {
+        {
           "firstName": undefined,
           "lastName": undefined,
           "middleName": undefined,
-          Symbol(ok-computer.object-root): "Unknown properties \\"unknownProp1\\", \\"unknownProp2\\"",
+          Symbol(ok-computer.object-root): "Unknown properties "unknownProp1", "unknownProp2"",
         }
       `);
       expect(isError(invalid)).toBe(true);
@@ -1539,7 +1539,7 @@ describe('object', () => {
         unknownProp1: 'property'
       });
       expect(valid).toMatchInlineSnapshot(`
-        Object {
+        {
           "firstName": undefined,
           "lastName": undefined,
           "middleName": undefined,
