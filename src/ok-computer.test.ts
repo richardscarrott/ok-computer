@@ -332,7 +332,7 @@ describe('instanceOf', () => {
   });
 
   test('introspection', () => {
-    const validator = instanceOf(function Foo() {});
+    const validator = instanceOf(function Foo() {} as any);
     const err = 'Expected instanceof Foo';
     expect(validator(INTROSPECT)).toBe(err);
   });
@@ -2229,15 +2229,36 @@ describe('assert', () => {
     expect(() =>
       assert(123, number, () => (null as any).runtimeError)
     ).not.toThrow();
+    expect(() => assert('', string, true)).not.toThrow();
   });
 
   test('invalid', () => {
-    expect(() => assert(1, string)).toThrowError(
-      new AssertError(listErrors(string(1)))
-    );
-    expect(() => assert(false, string)).toThrowError(
-      new AssertError(listErrors(string(false)))
-    );
+    // https://stackoverflow.com/questions/46042613/how-to-test-the-type-of-a-thrown-exception-in-jest/49512933#49512933 🤦‍♂️
+    try {
+      assert(1, string);
+      expect(true).toBe(false);
+    } catch (ex) {
+      expect(ex).toMatchObject({
+        constructor: AssertError,
+        message: 'Invalid: first of 1 errors: : Expected typeof string',
+        errors: listErrors(string(1)),
+        value: undefined
+      });
+      expect(ex).toMatchInlineSnapshot(
+        `[Error: Invalid: first of 1 errors: : Expected typeof string]`
+      );
+    }
+    try {
+      assert(1, string, true);
+      expect(true).toBe(false);
+    } catch (ex) {
+      expect(ex).toMatchObject({
+        constructor: AssertError,
+        message: 'Invalid: first of 1 errors: : Expected typeof string',
+        errors: listErrors(string(1)),
+        value: 1
+      });
+    }
     expect(() => assert(0, string, 'Custom Error')).toThrowError(
       new Error('Custom Error')
     );
@@ -2251,20 +2272,21 @@ describe('assert', () => {
         this.info = info;
       }
     }
-    expect(() =>
+    try {
       assert(
         1,
         string,
         ({ error, errorList }) =>
           new MyError('Custom Error', { error, errorList })
-      )
-    ).toThrowError(
-      expect.objectContaining({
+      );
+      expect(true).toBe(false);
+    } catch (ex) {
+      expect(ex).toMatchObject({
         constructor: MyError,
         message: 'Custom Error',
         info: { error: string(1), errorList: listErrors(string(1)) }
-      })
-    );
+      });
+    }
   });
 });
 

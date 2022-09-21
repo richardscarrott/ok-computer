@@ -101,17 +101,31 @@ export interface AssertErrParams<Err> {
 export function assert<V extends Validator>(
   value: unknown,
   validator: V,
-  err:
-    | Error
-    | string
-    | ((params: AssertErrParams<ExtractErr<V>>) => Error | string) = ({
-    errorList
-  }) => new AssertError(errorList)
-): asserts value is Infer<V> {
+  logValue?: true
+): asserts value is Infer<V>;
+export function assert<V extends Validator>(
+  value: unknown,
+  validator: V,
+  message: string
+): asserts value is Infer<V>;
+export function assert<V extends Validator>(
+  value: unknown,
+  validator: V,
+  error: Error
+): asserts value is Infer<V>;
+export function assert<V extends Validator>(
+  value: unknown,
+  validator: V,
+  createError: (params: AssertErrParams<ExtractErr<V>>) => Error | string
+): asserts value is Infer<V>;
+export function assert(value: any, validator: any, err?: any) {
   const error = validator(value);
   const errorList = listErrors(error);
   if (!errorList.length) {
     return;
+  }
+  if (typeof err === 'undefined' || err === true) {
+    throw new AssertError(errorList, err ? value : undefined);
   }
   const result =
     typeof err === 'function' ? err({ error: error as any, errorList }) : err;
@@ -166,13 +180,13 @@ const introspectValidator = <Err>(validator: Validator<unknown, Err>) => {
   return error;
 };
 
-export const is = <ValidType>(value: any) =>
+export const is = <ValidType>(value: ValidType) =>
   create<ValidType>((actual) => actual === value)(`Expected ${String(value)}`);
 
 export const typeOf = <ValidType>(str: string) =>
   create<ValidType>((value) => typeof value === str)(`Expected typeof ${str}`);
 
-export const instanceOf = <T extends Function>(ctor: T) =>
+export const instanceOf = <T>(ctor: { new (...args: any[]): T }) =>
   create<T>((value) => value instanceof ctor)(
     `Expected instanceof ${ctor.name}`
   );
@@ -191,7 +205,7 @@ export const fn = typeOf<Function>('function');
 
 export const undef = typeOf<undefined>('undefined');
 
-export const nul = is<null>(null);
+export const nul = is(null);
 
 export const integer = create<number>(Number.isInteger)('Expected integer');
 
@@ -320,9 +334,9 @@ export const pattern = (regex: RegExp) =>
     `Expected to match pattern ${regex}`
   );
 
-export const oneOf = <T>(...allowed: any[]) =>
+export const oneOf = <T extends any[]>(...allowed: T) =>
   err(
-    or(...allowed.map((val) => is<T>(val))),
+    or(...allowed.map((val) => is<T[number]>(val))),
     `Expected one of ${allowed.join(', ')}`
   );
 
