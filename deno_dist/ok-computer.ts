@@ -118,7 +118,11 @@ export function assert<V extends Validator>(
   validator: V,
   createError: (params: AssertErrParams<ExtractErr<V>>) => Error | string
 ): asserts value is Infer<V>;
-export function assert(value: any, validator: any, err?: any) {
+export function assert<V extends Validator>(
+  value: any,
+  validator: V,
+  err?: any
+) {
   const error = validator(value);
   const errorList = listErrors(error);
   if (!errorList.length) {
@@ -128,7 +132,7 @@ export function assert(value: any, validator: any, err?: any) {
     throw new AssertError(errorList, err ? value : undefined);
   }
   const result =
-    typeof err === 'function' ? err({ error: error as any, errorList }) : err;
+    typeof err === 'function' ? err({ error: error, errorList }) : err;
   throw typeof result === 'string' ? new Error(result) : result;
 }
 
