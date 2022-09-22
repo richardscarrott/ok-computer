@@ -34,7 +34,7 @@ export const isPlainObject = (value: unknown): value is Object => {
   return prototype === null || prototype === Object.prototype;
 };
 
-type UndefinedPropKeys<T> = {
+export type UndefinedPropKeys<T> = {
   [K in keyof T]-?: undefined extends T[K] ? K : never;
 }[keyof T];
 

@@ -1,3 +1,10 @@
+declare type UndefinedPropKeys<T> = {
+    [K in keyof T]-?: undefined extends T[K] ? K : never;
+}[keyof T];
+declare type SelectivePartial<T, K extends keyof T> = Partial<Pick<T, K>> & Required<Pick<T, Exclude<keyof T, K>>> extends infer U ? {
+    [P in keyof U]: U[P];
+} : never;
+
 interface IError<T = unknown> {
     readonly toPrimitiveError: () => T;
 }
@@ -54,10 +61,6 @@ declare class NegateError<T> implements INegateError<T>, IError<INegateError<T> 
     toJSON(): string | INegateError<T>;
     toString(): string;
 }
-
-declare type SelectivePartial<T, K extends keyof T> = Partial<Pick<T, K>> & Required<Pick<T, Exclude<keyof T, K>>> extends infer U ? {
-    [P in keyof U]: U[P];
-} : never;
 
 declare type Validator<ValidType = unknown, Err = unknown> = ((value: unknown, ...parents: any[]) => Err | undefined) & ValidatorTypeMeta<ValidType>;
 declare type StructValidator<ValidType = unknown, Err extends IStructure = any> = ((value: unknown, ...parents: any[]) => Err) & ValidatorTypeMeta<ValidType>;
@@ -137,7 +140,7 @@ declare type _InferObject<T extends Record<any, (val: any, ...parents: any[]) =>
 };
 declare const object: <Validators extends Record<keyof Validators, (val: any, ...parents: any[]) => any>>(validators: Validators, { allowUnknown }?: {
     allowUnknown?: boolean | undefined;
-}) => StructValidator<SelectivePartial<_InferObject<Validators>, (_InferObject<Validators> extends infer T ? { [K in keyof T]-?: undefined extends _InferObject<Validators>[K] ? K : never; } : never)[keyof Validators]>, ObjectErrorStruct<Validators>>;
+}) => StructValidator<SelectivePartial<_InferObject<Validators>, UndefinedPropKeys<_InferObject<Validators>>>, ObjectErrorStruct<Validators>>;
 declare function merge<ValidType, Err extends IStructure>(validator: Validator<ValidType, Err>): StructValidator<ValidType, Err>;
 declare function merge<ValidType1, ValidType2, Err1 extends IStructure, Err2 extends IStructure>(validator1: Validator<ValidType1, Err1>, validator2: Validator<ValidType2, Err2>): StructValidator<ValidType1 & ValidType2, Err1 & Err2>;
 declare function merge<ValidType1, ValidType2, ValidType3, Err1 extends IStructure, Err2 extends IStructure, Err3 extends IStructure>(validator1: Validator<ValidType1, Err1>, validator2: Validator<ValidType2, Err2>, validator3: Validator<ValidType3, Err3>): StructValidator<ValidType1 & ValidType2 & ValidType3, Err1 & Err2 & Err3>;
