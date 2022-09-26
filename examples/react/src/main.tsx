@@ -10,6 +10,7 @@ import {
 } from 'react-router-dom';
 import BasicForm from './components/basic-form';
 import StackedErrorMessagesForm from './components/stacked-error-messages-form';
+import PasswordValidator from './components/password-validator';
 
 const Layout: React.FunctionComponent = () => {
   const location = useLocation();
@@ -24,8 +25,11 @@ const Layout: React.FunctionComponent = () => {
         <Tablist marginBottom={16} marginRight={24}>
           {[
             { label: 'Basic', path: '/' },
-            { label: 'Stacked error messages', path: '/stacked-error-messages' }
-            // { label: 'Password validator', path: '/' },
+            {
+              label: 'Stacked error messages',
+              path: '/stacked-error-messages'
+            },
+            { label: 'Password validator', path: '/password-validator' }
             // { label: 'Form-level error messages', path: '/' },
             // { label: 'Nested fields', path: '/' },
             // { label: 'Array fields', path: '/' },
@@ -65,6 +69,10 @@ const router = createBrowserRouter([
           {
             path: 'stacked-error-messages',
             element: <StackedErrorMessagesForm />
+          },
+          {
+            path: 'password-validator',
+            element: <PasswordValidator />
           },
           {
             path: '*',
