@@ -1,6 +1,8 @@
 // `ok-computer/parser` is a loosely related module, allowing you to write
 // a parser function in a similar style to OK Computer validators.
 
+throw new Error('WIP');
+
 import { isPlainObject } from './utils';
 
 export type Parser = (value: any) => any;

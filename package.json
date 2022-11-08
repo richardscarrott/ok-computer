@@ -13,11 +13,6 @@
       "types": "./dist/ok-computer.d.ts",
       "import": "./dist/ok-computer.mjs",
       "require": "./dist/ok-computer.js"
-    },
-    "./parser": {
-      "types": "./dist/parser.d.ts",
-      "import": "./dist/parser.mjs",
-      "require": "./dist/parser.js"
     }
   },
   "typesVersions": {
